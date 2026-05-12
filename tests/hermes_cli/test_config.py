@@ -365,10 +365,10 @@ class TestSanitizeEnvLines:
 
     def test_three_concatenated_keys(self):
         """Three known keys on one line all get separated."""
-        lines = ["FAL_KEY=111FIRECRAWL_API_KEY=222GITHUB_TOKEN=333\n"]
+        lines = ["TAVILY_API_KEY=111FIRECRAWL_API_KEY=222GITHUB_TOKEN=333\n"]
         result = _sanitize_env_lines(lines)
         assert result == [
-            "FAL_KEY=111\n",
+            "TAVILY_API_KEY=111\n",
             "FIRECRAWL_API_KEY=222\n",
             "GITHUB_TOKEN=333\n",
         ]
@@ -416,7 +416,7 @@ class TestSanitizeEnvLines:
         env_file = tmp_path / ".env"
         env_file.write_text(
             "ANTHROPIC_API_KEY=sk-antOPENAI_BASE_URL=https://api.openai.com/v1\n"
-            "FAL_KEY=existing\n"
+            "TAVILY_API_KEY=existing\n"
         )
         with patch.dict(os.environ, {"HERMES_HOME": str(tmp_path)}):
             save_env_value("MESSAGING_CWD", "/tmp")
@@ -433,7 +433,7 @@ class TestSanitizeEnvLines:
         """sanitize_env_file reports how many entries were fixed."""
         env_file = tmp_path / ".env"
         env_file.write_text(
-            "FAL_KEY=good\n"
+            "TAVILY_API_KEY=good\n"
             "OPENROUTER_API_KEY=valFIRECRAWL_API_KEY=val2\n"
         )
         with patch.dict(os.environ, {"HERMES_HOME": str(tmp_path)}):
@@ -704,27 +704,6 @@ class TestInterimAssistantMessageConfig:
         assert raw["_config_version"] == DEFAULT_CONFIG["_config_version"]
         assert raw["display"]["tool_progress"] == "off"
         assert raw["display"]["interim_assistant_messages"] is True
-
-
-class TestDiscordChannelPromptsConfig:
-    def test_default_config_includes_discord_channel_prompts(self):
-        assert DEFAULT_CONFIG["discord"]["channel_prompts"] == {}
-
-    def test_migrate_adds_discord_channel_prompts_default(self, tmp_path):
-        config_path = tmp_path / "config.yaml"
-        config_path.write_text(
-            yaml.safe_dump({"_config_version": 17, "discord": {"auto_thread": True}}),
-            encoding="utf-8",
-        )
-
-        with patch.dict(os.environ, {"HERMES_HOME": str(tmp_path)}):
-            migrate_config(interactive=False, quiet=True)
-            raw = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-
-        from hermes_cli.config import DEFAULT_CONFIG
-        assert raw["_config_version"] == DEFAULT_CONFIG["_config_version"]
-        assert raw["discord"]["auto_thread"] is True
-        assert raw["discord"]["channel_prompts"] == {}
 
 
 class TestUserMessagePreviewConfig:

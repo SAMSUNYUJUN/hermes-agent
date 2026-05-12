@@ -323,9 +323,6 @@ def _summarize_tool_result(tool_name: str, tool_args: str, tool_content: str) ->
     if tool_name == "clarify":
         return "[clarify] asked user a question"
 
-    if tool_name == "text_to_speech":
-        return f"[text_to_speech] generated audio ({content_len:,} chars)"
-
     if tool_name == "cronjob":
         action = args.get("action", "?")
         return f"[cronjob] {action}"

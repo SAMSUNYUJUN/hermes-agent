@@ -909,7 +909,7 @@ class TestSilenceDetection:
 # ============================================================================
 
 class TestPlaybackInterrupt:
-    """Verify that TTS playback can be interrupted."""
+    """Verify that audio playback can be interrupted."""
 
     def test_stop_playback_terminates_process(self):
         from tools.voice_mode import stop_playback, _playback_lock

@@ -351,7 +351,6 @@ export const en: Translations = {
       security: "Security",
       browser: "Browser",
       voice: "Voice",
-      tts: "Text-to-Speech",
       stt: "Speech-to-Text",
       logging: "Logging",
       discord: "Discord",

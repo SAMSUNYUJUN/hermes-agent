@@ -522,9 +522,8 @@ class PluginContext:
 
         ``provider`` must be an instance of
         :class:`agent.image_gen_provider.ImageGenProvider`. The
-        ``provider.name`` attribute is what ``image_gen.provider`` in
-        ``config.yaml`` matches against when routing ``image_generate``
-        tool calls.
+        ``provider.name`` attribute is used by image-generation plugin
+        callers that select a backend by name.
         """
         from agent.image_gen_provider import ImageGenProvider
         from agent.image_gen_registry import register_provider
@@ -767,7 +766,7 @@ class PluginManager:
         # plugins take precedence over bundled, project plugins take
         # precedence over user. Dedup here so we only load the final
         # winner. Keys are path-derived (``image_gen/openai``,
-        # ``disk-cleanup``) so ``tts/openai`` and ``image_gen/openai``
+        # ``disk-cleanup``) so category-specific backends
         # don't collide even when both manifests say ``name: openai``.
         disabled = _get_disabled_plugins()
         enabled = _get_enabled_plugins()  # None = opt-in default (nothing enabled)
@@ -1140,8 +1139,8 @@ class PluginManager:
 
         The module slug is derived from ``manifest.key`` so category-namespaced
         plugins (``image_gen/openai``) import as
-        ``hermes_plugins.image_gen__openai`` without colliding with any
-        future ``tts/openai``.
+        ``hermes_plugins.image_gen__openai`` without colliding with other
+        category-specific backends.
         """
         plugin_dir = Path(manifest.path)  # type: ignore[arg-type]
         init_file = plugin_dir / "__init__.py"

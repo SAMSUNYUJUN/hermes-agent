@@ -124,7 +124,7 @@ class TestProviderEnvBlocklist:
             "EMAIL_PASSWORD": "email-secret",
             "FIRECRAWL_API_KEY": "fc-secret",
             "BROWSERBASE_PROJECT_ID": "bb-project",
-            "ELEVENLABS_API_KEY": "el-secret",
+            "TAVILY_API_KEY": "tvly-secret",
             "GITHUB_TOKEN": "ghp_secret",
             "GH_TOKEN": "gh_alias_secret",
             "GATEWAY_ALLOW_ALL_USERS": "true",

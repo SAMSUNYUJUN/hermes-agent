@@ -42,7 +42,7 @@ def test_show_config_marks_placeholders(tmp_path, capsys):
 
 def test_setup_summary_marks_placeholders(tmp_path, capsys):
     with patch.dict(os.environ, {"HERMES_HOME": str(tmp_path)}):
-        _print_setup_summary({"tts": {"provider": "edge"}}, tmp_path)
+        _print_setup_summary({"stt": {"provider": "local"}}, tmp_path)
 
     out = capsys.readouterr().out
     assert "hermes config set <key> <value>" in out

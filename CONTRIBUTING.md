@@ -34,7 +34,7 @@ This is the most common question for new contributors. The answer is almost alwa
 - It requires end-to-end integration with API keys, auth flows, or multi-component configuration managed by the agent harness
 - It needs custom processing logic that must execute precisely every time (not "best effort" from LLM interpretation)
 - It handles binary data, streaming, or real-time events that can't go through the terminal
-- Examples: browser automation (Browserbase session management), TTS (audio encoding + platform delivery), vision analysis (base64 image handling)
+- Examples: browser automation (Browserbase session management), audio transcription (recording + STT provider routing), vision analysis (base64 image handling)
 
 ### Should the Skill be bundled?
 

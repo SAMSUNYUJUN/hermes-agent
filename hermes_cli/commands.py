@@ -1,8 +1,7 @@
 """Slash command definitions and autocomplete for the Hermes CLI.
 
-Central registry for all slash commands. Every consumer -- CLI help, gateway
-dispatch, Telegram BotCommands, Slack subcommand mapping, autocomplete --
-derives its data from ``COMMAND_REGISTRY``.
+Central registry for all slash commands. CLI help, gateway dispatch, and
+autocomplete derive their data from ``COMMAND_REGISTRY``.
 
 To add a command: add a ``CommandDef`` entry to ``COMMAND_REGISTRY``.
 To add an alias: set ``aliases=("short",)`` on the existing ``CommandDef``.
@@ -65,8 +64,6 @@ COMMAND_REGISTRY: list[CommandDef] = [
     # Session
     CommandDef("new", "Start a new session (fresh session ID + history)", "Session",
                aliases=("reset",), args_hint="[name]"),
-    CommandDef("topic", "Enable or inspect Telegram DM topic sessions", "Session",
-               gateway_only=True, args_hint="[off|help|session-id]"),
     CommandDef("clear", "Clear screen and start a new session", "Session",
                cli_only=True),
     CommandDef("redraw", "Force a full UI repaint (recovers from terminal drift)", "Session",
@@ -79,7 +76,7 @@ COMMAND_REGISTRY: list[CommandDef] = [
     CommandDef("undo", "Remove the last user/assistant exchange", "Session"),
     CommandDef("title", "Set a title for the current session", "Session",
                args_hint="[name]"),
-    CommandDef("handoff", "Hand off this session to a messaging platform (Telegram, Discord, etc.)", "Session",
+    CommandDef("handoff", "Hand off this session to Feishu / Lark", "Session",
                args_hint="<platform>", cli_only=True),
     CommandDef("branch", "Branch the current session (explore a different path)", "Session",
                aliases=("fork",), args_hint="[name]"),
@@ -147,7 +144,7 @@ COMMAND_REGISTRY: list[CommandDef] = [
                cli_only=True, args_hint="[kaomoji|emoji|unicode|ascii]",
                subcommands=("kaomoji", "emoji", "unicode", "ascii")),
     CommandDef("voice", "Toggle voice mode", "Configuration",
-               args_hint="[on|off|tts|status]", subcommands=("on", "off", "tts", "status")),
+               args_hint="[on|off|status]", subcommands=("on", "off", "status")),
     CommandDef("busy", "Control what Enter does while Hermes is working", "Configuration",
                cli_only=True, args_hint="[queue|steer|interrupt|status]",
                subcommands=("queue", "steer", "interrupt", "status")),
@@ -267,7 +264,7 @@ for _cmd in COMMAND_REGISTRY:
         SUBCOMMANDS[f"/{_cmd.name}"] = list(_cmd.subcommands)
 
 # Also extract subcommands hinted in args_hint via pipe-separated patterns
-# e.g. args_hint="[on|off|tts|status]" for commands that don't have explicit subcommands.
+# e.g. args_hint="[on|off|status]" for commands that don't have explicit subcommands.
 # NOTE: If a command already has explicit subcommands, this fallback is skipped.
 # Use the `subcommands` field on CommandDef for intentional tab-completable args.
 _PIPE_SUBS_RE = re.compile(r"[a-z]+(?:\|[a-z]+)+")
@@ -438,7 +435,7 @@ def _iter_plugin_command_entries() -> list[tuple[str, str, str]]:
     :func:`hermes_cli.plugins.PluginContext.register_command`. They behave
     like ``CommandDef`` entries for gateway surfacing: they appear in the
     Telegram command menu, in Slack's ``/hermes`` subcommand mapping, and
-    (via :func:`gateway.platforms.discord._register_slash_commands`) in
+    (via the active gateway platform adapter) in
     Discord's native slash command picker.
 
     Lookup is lazy so importing this module never forces plugin discovery

@@ -185,11 +185,11 @@ def test_conflict_produces_overwrite_warning(tmp_path):
     migrator = _make_minimal_migrator(mod, tmp_path, execute=True)
     # Inject a conflict on a config.yaml target to exercise the warning pathway.
     migrator.record(
-        "tts-config",
+        "gateway-config",
         source=None,
         destination=migrator.target_root / "config.yaml",
         status=mod.STATUS_CONFLICT,
-        reason="TTS already configured",
+        reason="Gateway already configured",
     )
     report = migrator.build_report()
     assert any("--overwrite" in w for w in report["warnings"])
@@ -239,7 +239,7 @@ def test_config_apply_block_flips_on_config_yaml_error(tmp_path):
     mod = _load()
     migrator = _make_minimal_migrator(mod, tmp_path, execute=True)
     migrator.record(
-        "tts-config",
+        "gateway-config",
         source=None,
         destination=migrator.target_root / "config.yaml",
         status=mod.STATUS_ERROR,
@@ -263,14 +263,14 @@ def test_config_apply_block_does_not_flip_on_non_config_conflict(tmp_path):
 def test_run_if_selected_skips_config_ops_after_block(tmp_path):
     mod = _load()
     migrator = _make_minimal_migrator(
-        mod, tmp_path, execute=True, selected_options={"model-config", "tts-config"}
+        mod, tmp_path, execute=True, selected_options={"model-config", "gateway-config"}
     )
     migrator._config_apply_blocked = True
     called = []
-    migrator.run_if_selected("tts-config", lambda: called.append(True))
+    migrator.run_if_selected("gateway-config", lambda: called.append(True))
     assert called == []
     # The skipped record uses the blocked reason.
-    blocked = [i for i in migrator.items if i.kind == "tts-config"]
+    blocked = [i for i in migrator.items if i.kind == "gateway-config"]
     assert len(blocked) == 1
     assert blocked[0].status == mod.STATUS_SKIPPED
     assert blocked[0].reason == mod.REASON_BLOCKED_BY_APPLY_CONFLICT
@@ -292,11 +292,11 @@ def test_dry_run_never_blocks_even_after_conflict(tmp_path):
     conflicts and mislead the user about what would actually happen."""
     mod = _load()
     migrator = _make_minimal_migrator(
-        mod, tmp_path, execute=False, selected_options={"tts-config"}
+        mod, tmp_path, execute=False, selected_options={"gateway-config"}
     )
     migrator._config_apply_blocked = True
     called = []
-    migrator.run_if_selected("tts-config", lambda: called.append(True))
+    migrator.run_if_selected("gateway-config", lambda: called.append(True))
     assert called == [True]
 
 

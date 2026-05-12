@@ -440,8 +440,6 @@ class TestBuildNousSubscriptionPrompt:
                 provider_is_nous=True,
                 features={
                     "web": NousFeatureState("web", "Web tools", True, True, True, True, False, True, "firecrawl"),
-                    "image_gen": NousFeatureState("image_gen", "Image generation", True, True, True, True, False, True, "Nous Subscription"),
-                    "tts": NousFeatureState("tts", "OpenAI TTS", True, True, True, True, False, True, "OpenAI TTS"),
                     "browser": NousFeatureState("browser", "Browser automation", True, True, True, True, False, True, "Browser Use"),
                     "modal": NousFeatureState("modal", "Modal execution", False, True, False, False, False, True, "local"),
                 },
@@ -452,7 +450,7 @@ class TestBuildNousSubscriptionPrompt:
 
         assert "Browser Use" in prompt
         assert "Modal execution is optional" in prompt
-        assert "do not ask the user for Firecrawl, FAL, OpenAI TTS, or Browser-Use API keys" in prompt
+        assert "do not ask the user for Firecrawl or Browser-Use API keys" in prompt
 
     def test_non_subscriber_prompt_includes_relevant_upgrade_guidance(self, monkeypatch):
         monkeypatch.setattr("tools.tool_backend_helpers.managed_nous_tools_enabled", lambda: True)
@@ -464,15 +462,13 @@ class TestBuildNousSubscriptionPrompt:
                 provider_is_nous=False,
                 features={
                     "web": NousFeatureState("web", "Web tools", True, False, False, False, False, True, ""),
-                    "image_gen": NousFeatureState("image_gen", "Image generation", True, False, False, False, False, True, ""),
-                    "tts": NousFeatureState("tts", "OpenAI TTS", True, False, False, False, False, True, ""),
                     "browser": NousFeatureState("browser", "Browser automation", True, False, False, False, False, True, ""),
                     "modal": NousFeatureState("modal", "Modal execution", False, False, False, False, False, True, ""),
                 },
             ),
         )
 
-        prompt = build_nous_subscription_prompt({"image_generate"})
+        prompt = build_nous_subscription_prompt({"web_search"})
 
         assert "suggest Nous subscription as one option" in prompt
         assert "Do not mention subscription unless" in prompt
@@ -605,7 +601,7 @@ class TestBuildContextFilesPrompt:
         assert "Parent rules" not in result
 
     def test_hermes_md_strips_yaml_frontmatter(self, tmp_path):
-        content = "---\nmodel: claude-sonnet-4-20250514\ntools:\n  disabled: [tts]\n---\n\n# My Project\n\nUse Ruff for linting."
+        content = "---\nmodel: claude-sonnet-4-20250514\ntools:\n  disabled: [memory]\n---\n\n# My Project\n\nUse Ruff for linting."
         (tmp_path / ".hermes.md").write_text(content)
         result = build_context_files_prompt(cwd=str(tmp_path))
         assert "Ruff for linting" in result
@@ -1186,6 +1182,4 @@ class TestOpenAIModelExecutionGuidance:
 # =========================================================================
 # Budget warning history stripping
 # =========================================================================
-
-
 

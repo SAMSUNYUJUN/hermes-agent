@@ -325,9 +325,8 @@ gateway:
     save_failed:           "_（無法儲存到設定：{error}）_"
 
   voice:
-    enabled_voice_only:    "語音模式已啟用。\n當你傳送語音訊息時，我會以語音回覆。\n使用 /voice tts 讓所有訊息都收到語音回覆。"
+    enabled_voice_only:    "語音模式已啟用。"
     disabled_text:         "語音模式已停用。僅文字回覆。"
-    tts_enabled:           "自動 TTS 已啟用。\n所有回覆都將包含一則語音訊息。"
     status_mode:           "語音模式：{label}"
     status_channel:        "語音頻道：#{channel}"
     status_participants:   "參與人數：{count}"
@@ -337,7 +336,6 @@ gateway:
     disabled_short:        "語音模式已停用。"
     label_off:             "關閉（僅文字）"
     label_voice_only:      "開啟（僅對語音訊息進行語音回覆）"
-    label_all:             "TTS（對所有訊息進行語音回覆）"
 
   yolo:
     disabled:                   "⚠️ 本工作階段 YOLO 模式 **已關閉** — 危險指令將需要批准。"

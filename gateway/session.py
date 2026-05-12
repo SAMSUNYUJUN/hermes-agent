@@ -60,11 +60,17 @@ from .config import (
     SessionResetPolicy,  # noqa: F401 — re-exported via gateway/__init__.py
     HomeChannel,
 )
-from .whatsapp_identity import (
-    canonical_whatsapp_identifier,
-    normalize_whatsapp_identifier,  # noqa: F401 - re-exported for gateway.session callers
-)
 from utils import atomic_replace
+
+
+def normalize_whatsapp_identifier(value: Any) -> str:
+    """Compatibility shim for legacy sessions from pre-Feishu-only builds."""
+    return str(value or "").strip()
+
+
+def canonical_whatsapp_identifier(value: Any) -> str:
+    """Compatibility shim for legacy sessions from pre-Feishu-only builds."""
+    return normalize_whatsapp_identifier(value)
 
 
 @dataclass

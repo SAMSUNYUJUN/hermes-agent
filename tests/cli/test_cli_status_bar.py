@@ -380,7 +380,7 @@ class TestCLIStatusBar:
         cli_obj._voice_mode = True
         cli_obj._voice_recording = False
         cli_obj._voice_processing = False
-        cli_obj._voice_tts = True
+        cli_obj._voice_speech_output = True
         cli_obj._voice_continuous = True
 
         fragments = cli_obj._get_voice_status_fragments(width=50)
@@ -408,7 +408,7 @@ class TestCLIStatusBar:
         cli_obj._voice_mode = True
         cli_obj._voice_recording = False
         cli_obj._voice_processing = False
-        cli_obj._voice_tts = False
+        cli_obj._voice_speech_output = False
         cli_obj._voice_continuous = False
         cli_obj.set_voice_record_key_cache("ctrl+o")
 
@@ -434,7 +434,7 @@ class TestCLIStatusBar:
         cli_obj._voice_mode = True
         cli_obj._voice_recording = False
         cli_obj._voice_processing = False
-        cli_obj._voice_tts = False
+        cli_obj._voice_speech_output = False
         cli_obj._voice_continuous = False
         # No cache set — mirrors pre-startup state; fall back to
         # documented Ctrl+B default (Copilot round-13 review).
@@ -448,7 +448,7 @@ class TestCLIStatusBar:
         cli_obj._voice_mode = True
         cli_obj._voice_recording = False
         cli_obj._voice_processing = False
-        cli_obj._voice_tts = False
+        cli_obj._voice_speech_output = False
         cli_obj._voice_continuous = False
         # Non-string / typoed configs fall through the formatter to the
         # documented default so the status bar never advertises an

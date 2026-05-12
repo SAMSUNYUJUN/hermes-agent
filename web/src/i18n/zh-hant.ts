@@ -351,7 +351,6 @@ export const zhHant: Translations = {
       security: "安全性",
       browser: "瀏覽器",
       voice: "語音",
-      tts: "文字轉語音",
       stt: "語音轉文字",
       logging: "日誌",
       discord: "Discord",

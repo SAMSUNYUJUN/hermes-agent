@@ -12,13 +12,6 @@ from hermes_cli.nous_subscription import NousFeatureState, NousSubscriptionFeatu
 from hermes_cli.setup import _print_setup_summary, setup_model_provider
 
 
-def _maybe_keep_current_tts(question, choices):
-    if question != "Select TTS provider:":
-        return None
-    assert choices[-1].startswith("Keep current (")
-    return len(choices) - 1
-
-
 def _clear_provider_env(monkeypatch):
     for key in (
         "HERMES_INFERENCE_PROVIDER",
@@ -37,11 +30,8 @@ def _clear_provider_env(monkeypatch):
         monkeypatch.delenv(key, raising=False)
 
 
-def _stub_tts(monkeypatch):
-    monkeypatch.setattr("hermes_cli.setup.prompt_choice", lambda q, c, d=0: (
-        _maybe_keep_current_tts(q, c) if _maybe_keep_current_tts(q, c) is not None
-        else d
-    ))
+def _stub_optional_prompts(monkeypatch):
+    monkeypatch.setattr("hermes_cli.setup.prompt_choice", lambda q, c, d=0: d)
     monkeypatch.setattr("hermes_cli.setup.prompt_yes_no", lambda *a, **kw: False)
 
 
@@ -67,7 +57,7 @@ def test_setup_keep_current_custom_from_config_does_not_fall_through(tmp_path, m
     """Keep-current custom should not fall through to the generic model menu."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
 
     # Pre-set custom provider
     _write_model_config("custom", "http://localhost:8080/v1", "local-model")
@@ -95,7 +85,7 @@ def test_setup_keep_current_config_provider_uses_provider_specific_model_menu(
     """Keeping current provider preserves the config on disk."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
 
     _write_model_config("zai", "https://open.bigmodel.cn/api/paas/v4", "glm-5")
 
@@ -138,9 +128,6 @@ def test_setup_same_provider_rotation_strategy_saved_for_multi_credential_pool(t
     def fake_prompt_choice(question, choices, default=0):
         if "rotation strategy" in question:
             return 1  # round robin
-        tts_idx = _maybe_keep_current_tts(question, choices)
-        if tts_idx is not None:
-            return tts_idx
         return default
 
     def fake_prompt_yes_no(question, default=True):
@@ -153,8 +140,8 @@ def test_setup_same_provider_rotation_strategy_saved_for_multi_credential_pool(t
     import agent.auxiliary_client as _aux_mod
 
     monkeypatch.setattr(_main_mod, "select_provider_and_model", fake_select)
-    # NOTE: _stub_tts overwrites prompt_choice, so set our mock AFTER it.
-    _stub_tts(monkeypatch)
+    # NOTE: _stub_optional_prompts overwrites prompt_choice, so set our mock AFTER it.
+    _stub_optional_prompts(monkeypatch)
     monkeypatch.setattr(_setup_mod, "prompt_choice", fake_prompt_choice)
     monkeypatch.setattr(_setup_mod, "prompt_yes_no", fake_prompt_yes_no)
     monkeypatch.setattr(_setup_mod, "prompt", lambda *args, **kwargs: "")
@@ -203,9 +190,6 @@ def test_setup_same_provider_fallback_can_add_another_credential(tmp_path, monke
     def fake_prompt_choice(question, choices, default=0):
         if question == "Select same-provider rotation strategy:":
             return 0
-        tts_idx = _maybe_keep_current_tts(question, choices)
-        if tts_idx is not None:
-            return tts_idx
         return default
 
     yes_no_answers = iter([True, False])
@@ -216,7 +200,7 @@ def test_setup_same_provider_fallback_can_add_another_credential(tmp_path, monke
         return False
 
     monkeypatch.setattr("hermes_cli.main.select_provider_and_model", fake_select)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
     monkeypatch.setattr("hermes_cli.setup.prompt_choice", fake_prompt_choice)
     monkeypatch.setattr("hermes_cli.setup.prompt_yes_no", fake_prompt_yes_no)
     monkeypatch.setattr("hermes_cli.setup.prompt", lambda *args, **kwargs: "")
@@ -253,7 +237,7 @@ def test_setup_same_provider_single_credential_keeps_existing_rotation_strategy(
         pass
 
     monkeypatch.setattr("hermes_cli.main.select_provider_and_model", fake_select)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
     monkeypatch.setattr("hermes_cli.setup.prompt", lambda *args, **kwargs: "")
     monkeypatch.setattr("agent.credential_pool.load_pool", lambda provider: _Pool())
     monkeypatch.setattr("agent.auxiliary_client.get_available_vision_backends", lambda: [])
@@ -292,13 +276,10 @@ def test_setup_pool_step_shows_manual_vs_auto_detected_counts(tmp_path, monkeypa
     def fake_prompt_choice(question, choices, default=0):
         if "rotation strategy" in question:
             return 0
-        tts_idx = _maybe_keep_current_tts(question, choices)
-        if tts_idx is not None:
-            return tts_idx
         return default
 
     monkeypatch.setattr("hermes_cli.main.select_provider_and_model", fake_select)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
     monkeypatch.setattr("hermes_cli.setup.prompt_choice", fake_prompt_choice)
     monkeypatch.setattr("hermes_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
     monkeypatch.setattr("hermes_cli.setup.prompt", lambda *args, **kwargs: "")
@@ -324,9 +305,6 @@ def test_setup_copilot_acp_skips_same_provider_pool_step(tmp_path, monkeypatch):
             return 0
         if question == "Configure vision:":
             return len(choices) - 1
-        tts_idx = _maybe_keep_current_tts(question, choices)
-        if tts_idx is not None:
-            return tts_idx
         raise AssertionError(f"Unexpected prompt_choice call: {question}")
 
     def fake_prompt_yes_no(question, default=True):
@@ -349,7 +327,7 @@ def test_setup_copilot_uses_gh_auth_and_saves_provider(tmp_path, monkeypatch):
     """Copilot provider saves correctly through delegation."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
 
     config = load_config()
 
@@ -370,7 +348,7 @@ def test_setup_copilot_acp_uses_model_picker_and_saves_provider(tmp_path, monkey
     """Copilot ACP provider saves correctly through delegation."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
 
     config = load_config()
 
@@ -393,7 +371,7 @@ def test_setup_switch_custom_to_codex_clears_custom_endpoint_and_updates_config(
     """Switching from custom to codex updates config correctly."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
 
     # Start with custom
     _write_model_config("custom", "http://localhost:11434/v1", "qwen3.5:32b")
@@ -419,7 +397,7 @@ def test_setup_switch_preserves_non_model_config(tmp_path, monkeypatch):
     """Provider switch preserves other config sections (terminal, display, etc.)."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
 
     config = load_config()
     config["terminal"]["timeout"] = 999
@@ -465,8 +443,6 @@ def test_setup_summary_shows_camofox_when_browser_feature_is_camofox(tmp_path, m
             provider_is_nous=False,
             features={
                 "web": NousFeatureState("web", "Web tools", True, False, False, False, False, True, ""),
-                "image_gen": NousFeatureState("image_gen", "Image generation", True, False, False, False, False, True, ""),
-                "tts": NousFeatureState("tts", "OpenAI TTS", True, False, False, False, False, True, ""),
                 "browser": NousFeatureState("browser", "Browser automation", True, True, True, False, True, True, "Camofox"),
                 "modal": NousFeatureState("modal", "Modal execution", False, False, False, False, False, True, "local"),
             },
@@ -492,8 +468,6 @@ def test_setup_summary_does_not_mark_incomplete_browserbase_as_available(tmp_pat
             provider_is_nous=False,
             features={
                 "web": NousFeatureState("web", "Web tools", True, False, False, False, False, True, ""),
-                "image_gen": NousFeatureState("image_gen", "Image generation", True, False, False, False, False, True, ""),
-                "tts": NousFeatureState("tts", "OpenAI TTS", True, False, False, False, False, True, ""),
                 "browser": NousFeatureState("browser", "Browser automation", True, False, False, False, False, True, "Browserbase"),
                 "modal": NousFeatureState("modal", "Modal execution", False, False, False, False, False, True, "local"),
             },

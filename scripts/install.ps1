@@ -495,7 +495,7 @@ function Install-SystemPackages {
         $needRipgrep = $true
     }
 
-    Write-Info "Checking ffmpeg (TTS voice messages)..."
+    Write-Info "Checking ffmpeg (audio processing)..."
     if (Get-Command ffmpeg -ErrorAction SilentlyContinue) {
         Write-Success "ffmpeg found"
         $script:HasFfmpeg = $true
@@ -518,7 +518,7 @@ function Install-SystemPackages {
         $scoopPkgs += "ripgrep"
     }
     if ($needFfmpeg) {
-        $descParts += "ffmpeg for TTS voice messages"
+        $descParts += "ffmpeg for audio processing"
         $wingetPkgs += "Gyan.FFmpeg"
         $chocoPkgs += "ffmpeg"
         $scoopPkgs += "ffmpeg"
@@ -594,7 +594,7 @@ function Install-SystemPackages {
         Write-Info "  winget install BurntSushi.ripgrep.MSVC"
     }
     if ($needFfmpeg) {
-        Write-Warn "ffmpeg not installed (TTS voice messages will be limited)"
+        Write-Warn "ffmpeg not installed (audio processing will be limited)"
         Write-Info "  winget install Gyan.FFmpeg"
     }
 }
@@ -802,7 +802,7 @@ function Install-Dependencies {
     # Tier 1: [all] — everything, including RL git+https deps (best case).
     # Tier 2: [core-extras] synthesised locally — all PyPI-only extras we
     #         ship (web, mcp, cron, cli, voice, messaging, slack, dev, acp,
-    #         pty, homeassistant, sms, tts-premium, honcho, google, mistral,
+    #         pty, homeassistant, sms, honcho, google, mistral,
     #         bedrock, dingtalk, feishu, modal, daytona, vercel).  Drops [rl]
     #         and [matrix] (linux-only) which are the usual failure culprits.
     # Tier 3: [web,mcp,cron,cli,messaging,dev] — the minimum we strongly
@@ -811,7 +811,7 @@ function Install-Dependencies {
     # Tier 4: bare `.` — last-resort so at least the core CLI launches.
     $installTiers = @(
         @{ Name = "all (with RL/matrix extras)"; Spec = ".[all]" },
-        @{ Name = "PyPI-only extras (no git deps)"; Spec = ".[web,mcp,cron,cli,voice,messaging,slack,dev,acp,pty,homeassistant,sms,tts-premium,honcho,google,mistral,bedrock,dingtalk,feishu,modal,daytona,vercel]" },
+        @{ Name = "PyPI-only extras (no git deps)"; Spec = ".[web,mcp,cron,cli,voice,messaging,slack,dev,acp,pty,homeassistant,sms,honcho,google,mistral,bedrock,dingtalk,feishu,modal,daytona,vercel]" },
         @{ Name = "dashboard + core platforms"; Spec = ".[web,mcp,cron,cli,messaging,dev]" },
         @{ Name = "core only (no extras)"; Spec = "." }
     )

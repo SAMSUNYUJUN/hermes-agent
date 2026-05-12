@@ -351,7 +351,6 @@ export const tr: Translations = {
       security: "Güvenlik",
       browser: "Tarayıcı",
       voice: "Ses",
-      tts: "Metinden Konuşmaya",
       stt: "Konuşmadan Metne",
       logging: "Günlükleme",
       discord: "Discord",

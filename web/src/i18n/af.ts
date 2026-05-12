@@ -351,7 +351,6 @@ export const af: Translations = {
       security: "Sekuriteit",
       browser: "Blaaier",
       voice: "Stem",
-      tts: "Teks-na-Spraak",
       stt: "Spraak-na-Teks",
       logging: "Aantekening",
       discord: "Discord",

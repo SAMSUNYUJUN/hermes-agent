@@ -325,9 +325,8 @@ gateway:
     save_failed:           "_(설정에 저장할 수 없습니다: {error})_"
 
   voice:
-    enabled_voice_only:    "음성 모드가 활성화되었습니다.\n음성 메시지를 보내시면 음성으로 답변하겠습니다.\n모든 메시지에 대해 음성으로 응답받으려면 /voice tts를 사용하세요."
+    enabled_voice_only:    "음성 모드가 활성화되었습니다."
     disabled_text:         "음성 모드가 비활성화되었습니다. 텍스트로만 응답합니다."
-    tts_enabled:           "자동 TTS가 활성화되었습니다.\n모든 응답에 음성 메시지가 포함됩니다."
     status_mode:           "음성 모드: {label}"
     status_channel:        "음성 채널: #{channel}"
     status_participants:   "참가자: {count}"
@@ -337,7 +336,6 @@ gateway:
     disabled_short:        "음성 모드가 비활성화되었습니다."
     label_off:             "꺼짐 (텍스트 전용)"
     label_voice_only:      "켜짐 (음성 메시지에 음성으로 응답)"
-    label_all:             "TTS (모든 메시지에 음성으로 응답)"
 
   yolo:
     disabled:                   "⚠️ 이 세션에서 YOLO 모드 **꺼짐** — 위험한 명령은 승인이 필요합니다."

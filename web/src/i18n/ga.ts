@@ -351,7 +351,6 @@ export const ga: Translations = {
       security: "Slándáil",
       browser: "Brabhsálaí",
       voice: "Guth",
-      tts: "Téacs go Caint",
       stt: "Caint go Téacs",
       logging: "Logáil",
       discord: "Discord",

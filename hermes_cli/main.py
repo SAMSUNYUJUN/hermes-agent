@@ -1452,213 +1452,6 @@ def cmd_gateway(args):
     gateway_command(args)
 
 
-def cmd_whatsapp(args):
-    """Set up WhatsApp: choose mode, configure, install bridge, pair via QR."""
-    _require_tty("whatsapp")
-    from hermes_cli.config import get_env_value, save_env_value
-
-    print()
-    print("⚕ WhatsApp Setup")
-    print("=" * 50)
-
-    # ── Step 1: Choose mode ──────────────────────────────────────────────
-    current_mode = get_env_value("WHATSAPP_MODE") or ""
-    if not current_mode:
-        print()
-        print("How will you use WhatsApp with Hermes?")
-        print()
-        print("  1. Separate bot number (recommended)")
-        print("     People message the bot's number directly — cleanest experience.")
-        print(
-            "     Requires a second phone number with WhatsApp installed on a device."
-        )
-        print()
-        print("  2. Personal number (self-chat)")
-        print("     You message yourself to talk to the agent.")
-        print("     Quick to set up, but the UX is less intuitive.")
-        print()
-        try:
-            choice = input("  Choose [1/2]: ").strip()
-        except (EOFError, KeyboardInterrupt):
-            print("\nSetup cancelled.")
-            return
-
-        if choice == "1":
-            save_env_value("WHATSAPP_MODE", "bot")
-            wa_mode = "bot"
-            print("  ✓ Mode: separate bot number")
-            print()
-            print("  ┌─────────────────────────────────────────────────┐")
-            print("  │  Getting a second number for the bot:           │")
-            print("  │                                                 │")
-            print("  │  Easiest: Install WhatsApp Business (free app)  │")
-            print("  │  on your phone with a second number:            │")
-            print("  │    • Dual-SIM: use your 2nd SIM slot            │")
-            print("  │    • Google Voice: free US number (voice.google) │")
-            print("  │    • Prepaid SIM: $3-10, verify once            │")
-            print("  │                                                 │")
-            print("  │  WhatsApp Business runs alongside your personal │")
-            print("  │  WhatsApp — no second phone needed.             │")
-            print("  └─────────────────────────────────────────────────┘")
-        else:
-            save_env_value("WHATSAPP_MODE", "self-chat")
-            wa_mode = "self-chat"
-            print("  ✓ Mode: personal number (self-chat)")
-    else:
-        wa_mode = current_mode
-        mode_label = (
-            "separate bot number" if wa_mode == "bot" else "personal number (self-chat)"
-        )
-        print(f"\n✓ Mode: {mode_label}")
-
-    # ── Step 2: Enable WhatsApp ──────────────────────────────────────────
-    print()
-    current = get_env_value("WHATSAPP_ENABLED")
-    if current and current.lower() == "true":
-        print("✓ WhatsApp is already enabled")
-    else:
-        save_env_value("WHATSAPP_ENABLED", "true")
-        print("✓ WhatsApp enabled")
-
-    # ── Step 3: Allowed users ────────────────────────────────────────────
-    current_users = get_env_value("WHATSAPP_ALLOWED_USERS") or ""
-    if current_users:
-        print(f"✓ Allowed users: {current_users}")
-        try:
-            response = input("\n  Update allowed users? [y/N] ").strip()
-        except (EOFError, KeyboardInterrupt):
-            response = "n"
-        if response.lower() in {"y", "yes"}:
-            if wa_mode == "bot":
-                phone = input(
-                    "  Phone numbers that can message the bot (comma-separated): "
-                ).strip()
-            else:
-                phone = input("  Your phone number (e.g. 15551234567): ").strip()
-            if phone:
-                save_env_value("WHATSAPP_ALLOWED_USERS", phone.replace(" ", ""))
-                print(f"  ✓ Updated to: {phone}")
-    else:
-        print()
-        if wa_mode == "bot":
-            print("  Who should be allowed to message the bot?")
-            phone = input(
-                "  Phone numbers (comma-separated, or * for anyone): "
-            ).strip()
-        else:
-            phone = input("  Your phone number (e.g. 15551234567): ").strip()
-        if phone:
-            save_env_value("WHATSAPP_ALLOWED_USERS", phone.replace(" ", ""))
-            print(f"  ✓ Allowed users set: {phone}")
-        else:
-            print("  ⚠ No allowlist — the agent will respond to ALL incoming messages")
-
-    # ── Step 4: Install bridge dependencies ──────────────────────────────
-    project_root = Path(__file__).resolve().parents[1]
-    bridge_dir = project_root / "scripts" / "whatsapp-bridge"
-    bridge_script = bridge_dir / "bridge.js"
-
-    if not bridge_script.exists():
-        print(f"\n✗ Bridge script not found at {bridge_script}")
-        return
-
-    if not (bridge_dir / "node_modules").exists():
-        print(
-            "\n→ Installing WhatsApp bridge dependencies (this can take a few minutes)..."
-        )
-        npm = shutil.which("npm")
-        if not npm:
-            print("  ✗ npm not found on PATH — install Node.js first")
-            return
-        try:
-            result = subprocess.run(
-                [npm, "install", "--no-fund", "--no-audit", "--progress=false"],
-                cwd=str(bridge_dir),
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.PIPE,
-                text=True,
-            )
-        except KeyboardInterrupt:
-            print("\n  ✗ Install cancelled")
-            return
-        if result.returncode != 0:
-            err = (result.stderr or "").strip()
-            preview = "\n".join(err.splitlines()[-30:]) if err else "(no output)"
-            print("  ✗ npm install failed:")
-            print(preview)
-            return
-        print("  ✓ Dependencies installed")
-    else:
-        print("✓ Bridge dependencies already installed")
-
-    # ── Step 5: Check for existing session ───────────────────────────────
-    session_dir = get_hermes_home() / "whatsapp" / "session"
-    session_dir.mkdir(parents=True, exist_ok=True)
-
-    if (session_dir / "creds.json").exists():
-        print("✓ Existing WhatsApp session found")
-        try:
-            response = input(
-                "\n  Re-pair? This will clear the existing session. [y/N] "
-            ).strip()
-        except (EOFError, KeyboardInterrupt):
-            response = "n"
-        if response.lower() in {"y", "yes"}:
-            shutil.rmtree(session_dir, ignore_errors=True)
-            session_dir.mkdir(parents=True, exist_ok=True)
-            print("  ✓ Session cleared")
-        else:
-            print("\n✓ WhatsApp is configured and paired!")
-            print("  Start the gateway with: hermes gateway")
-            return
-
-    # ── Step 6: QR code pairing ──────────────────────────────────────────
-    print()
-    print("─" * 50)
-    if wa_mode == "bot":
-        print("📱 Open WhatsApp (or WhatsApp Business) on the")
-        print("   phone with the BOT's number, then scan:")
-    else:
-        print("📱 Open WhatsApp on your phone, then scan:")
-    print()
-    print("   Settings → Linked Devices → Link a Device")
-    print("─" * 50)
-    print()
-
-    try:
-        subprocess.run(
-            ["node", str(bridge_script), "--pair-only", "--session", str(session_dir)],
-            cwd=str(bridge_dir),
-        )
-    except KeyboardInterrupt:
-        pass
-
-    # ── Step 7: Post-pairing ─────────────────────────────────────────────
-    print()
-    if (session_dir / "creds.json").exists():
-        print("✓ WhatsApp paired successfully!")
-        print()
-        if wa_mode == "bot":
-            print("  Next steps:")
-            print("    1. Start the gateway:  hermes gateway")
-            print("    2. Send a message to the bot's WhatsApp number")
-            print("    3. The agent will reply automatically")
-            print()
-            print("  Tip: Agent responses are prefixed with '⚕ Hermes Agent'")
-        else:
-            print("  Next steps:")
-            print("    1. Start the gateway:  hermes gateway")
-            print("    2. Open WhatsApp → Message Yourself")
-            print("    3. Type a message — the agent will reply")
-            print()
-            print("  Tip: Agent responses are prefixed with '⚕ Hermes Agent'")
-            print("  so you can tell them apart from your own messages.")
-        print()
-        print("  Or install as a service: hermes gateway install")
-    else:
-        print("⚠ Pairing may not have completed. Run 'hermes whatsapp' to try again.")
-
-
 def cmd_setup(args):
     """Interactive setup wizard."""
     from hermes_cli.setup import run_setup_wizard
@@ -5207,44 +5000,6 @@ def cmd_cron(args):
     cron_command(args)
 
 
-def cmd_webhook(args):
-    """Webhook subscription management."""
-    from hermes_cli.webhook import webhook_command
-
-    webhook_command(args)
-
-
-def cmd_slack(args):
-    """Slack integration helpers.
-
-    Dispatches ``hermes slack <subcommand>``. Currently supports:
-      manifest — print or write a Slack app manifest with every gateway
-                 command registered as a first-class slash.
-    """
-    sub = getattr(args, "slack_command", None)
-    if sub in {None, ""}:
-        # No subcommand — print usage hint.
-        print(
-            "usage: hermes slack <subcommand>\n"
-            "\n"
-            "subcommands:\n"
-            "  manifest   Generate a Slack app manifest with every gateway\n"
-            "             command registered as a native slash\n"
-            "\n"
-            "Run `hermes slack manifest -h` for details.",
-            file=sys.stderr,
-        )
-        return 1
-
-    if sub == "manifest":
-        from hermes_cli.slack_cli import slack_manifest_command
-
-        return slack_manifest_command(args)
-
-    print(f"Unknown slack subcommand: {sub}", file=sys.stderr)
-    return 1
-
-
 def cmd_kanban(args):
     """Multi-profile collaboration board."""
     from hermes_cli.kanban import kanban_command
@@ -8415,7 +8170,6 @@ def _coalesce_session_name_args(argv: list) -> list:
         "model",
         "gateway",
         "setup",
-        "whatsapp",
         "login",
         "logout",
         "auth",
@@ -8438,7 +8192,6 @@ def _coalesce_session_name_args(argv: list) -> list:
         "claw",
         "plugins",
         "acp",
-        "webhook",
         "memory",
         "dump",
         "debug",
@@ -9173,8 +8926,7 @@ _BUILTIN_SUBCOMMANDS = frozenset(
         "dump", "fallback", "gateway", "hooks", "import", "insights",
         "kanban", "login", "logout", "logs", "mcp", "memory", "model",
         "pairing", "plugins", "profile", "sessions", "setup", "skills",
-        "slack", "status", "tools", "uninstall", "update", "version",
-        "webhook", "whatsapp", "chat",
+        "status", "tools", "uninstall", "update", "version", "chat",
         # Help-ish invocations — plugin commands not being listed in
         # top-level --help is an acceptable trade-off for skipping an
         # expensive eager import of every bundled plugin module.
@@ -9373,7 +9125,7 @@ def main():
     gateway_parser = subparsers.add_parser(
         "gateway",
         help="Messaging gateway management",
-        description="Manage the messaging gateway (Telegram, Discord, WhatsApp)",
+        description="Manage the Feishu/Lark messaging gateway",
     )
     gateway_subparsers = gateway_parser.add_subparsers(dest="gateway_command")
 
@@ -9523,12 +9275,12 @@ def main():
         "setup",
         help="Interactive setup wizard",
         description="Configure Hermes Agent with an interactive wizard. "
-        "Run a specific section: hermes setup model|tts|terminal|gateway|tools|agent",
+        "Run a specific section: hermes setup model|terminal|gateway|tools|agent",
     )
     setup_parser.add_argument(
         "section",
         nargs="?",
-        choices=["model", "tts", "terminal", "gateway", "tools", "agent"],
+        choices=["model", "terminal", "gateway", "tools", "agent"],
         default=None,
         help="Run a specific setup section instead of the full wizard",
     )
@@ -9554,64 +9306,6 @@ def main():
         "or unset, instead of running the full reconfigure wizard.",
     )
     setup_parser.set_defaults(func=cmd_setup)
-
-    # =========================================================================
-    # whatsapp command
-    # =========================================================================
-    whatsapp_parser = subparsers.add_parser(
-        "whatsapp",
-        help="Set up WhatsApp integration",
-        description="Configure WhatsApp and pair via QR code",
-    )
-    whatsapp_parser.set_defaults(func=cmd_whatsapp)
-
-    # =========================================================================
-    # slack command
-    # =========================================================================
-    slack_parser = subparsers.add_parser(
-        "slack",
-        help="Slack integration helpers (manifest generation, etc.)",
-        description="Slack integration helpers for Hermes.",
-    )
-    slack_sub = slack_parser.add_subparsers(dest="slack_command")
-    slack_manifest = slack_sub.add_parser(
-        "manifest",
-        help="Print or write a Slack app manifest with every gateway command "
-        "registered as a native slash (/btw, /stop, /model, ...)",
-        description=(
-            "Generate a Slack app manifest that registers every gateway "
-            "command in COMMAND_REGISTRY as a first-class Slack slash "
-            "command (matching Discord and Telegram parity). Paste the "
-            "output into Slack app config → Features → App Manifest → "
-            "Edit, then Save. Reinstall the app if Slack prompts for it."
-        ),
-    )
-    slack_manifest.add_argument(
-        "--write",
-        nargs="?",
-        const=True,
-        default=None,
-        metavar="PATH",
-        help="Write manifest to a file instead of stdout. With no PATH "
-        "writes to $HERMES_HOME/slack-manifest.json.",
-    )
-    slack_manifest.add_argument(
-        "--name",
-        default=None,
-        help='Bot display name (default: "Hermes")',
-    )
-    slack_manifest.add_argument(
-        "--description",
-        default=None,
-        help="Bot description shown in Slack's app directory.",
-    )
-    slack_manifest.add_argument(
-        "--slashes-only",
-        action="store_true",
-        help="Emit only the features.slash_commands array (for merging "
-        "into an existing manifest manually).",
-    )
-    slack_parser.set_defaults(func=cmd_slack)
 
     # =========================================================================
     # login command
@@ -9802,7 +9496,7 @@ def main():
     cron_create.add_argument("--name", help="Optional human-friendly job name")
     cron_create.add_argument(
         "--deliver",
-        help="Delivery target: origin, local, telegram, discord, signal, or platform:chat_id",
+        help="Delivery target: origin, local, feishu, or feishu:chat_id",
     )
     cron_create.add_argument("--repeat", type=int, help="Optional repeat count")
     cron_create.add_argument(
@@ -9927,70 +9621,6 @@ def main():
     _add_accept_hooks_flag(cron_tick)
     _add_accept_hooks_flag(cron_parser)
     cron_parser.set_defaults(func=cmd_cron)
-
-    # =========================================================================
-    # webhook command
-    # =========================================================================
-    webhook_parser = subparsers.add_parser(
-        "webhook",
-        help="Manage dynamic webhook subscriptions",
-        description="Create, list, and remove webhook subscriptions for event-driven agent activation",
-    )
-    webhook_subparsers = webhook_parser.add_subparsers(dest="webhook_action")
-
-    wh_sub = webhook_subparsers.add_parser(
-        "subscribe", aliases=["add"], help="Create a webhook subscription"
-    )
-    wh_sub.add_argument("name", help="Route name (used in URL: /webhooks/<name>)")
-    wh_sub.add_argument(
-        "--prompt", default="", help="Prompt template with {dot.notation} payload refs"
-    )
-    wh_sub.add_argument(
-        "--events", default="", help="Comma-separated event types to accept"
-    )
-    wh_sub.add_argument("--description", default="", help="What this subscription does")
-    wh_sub.add_argument(
-        "--skills", default="", help="Comma-separated skill names to load"
-    )
-    wh_sub.add_argument(
-        "--deliver",
-        default="log",
-        help="Delivery target: log, telegram, discord, slack, etc.",
-    )
-    wh_sub.add_argument(
-        "--deliver-chat-id",
-        default="",
-        help="Target chat ID for cross-platform delivery",
-    )
-    wh_sub.add_argument(
-        "--secret", default="", help="HMAC secret (auto-generated if omitted)"
-    )
-    wh_sub.add_argument(
-        "--deliver-only",
-        action="store_true",
-        help="Skip the agent — deliver the rendered prompt directly as the "
-        "message. Zero LLM cost. Requires --deliver to be a real target "
-        "(not 'log').",
-    )
-
-    webhook_subparsers.add_parser(
-        "list", aliases=["ls"], help="List all dynamic subscriptions"
-    )
-
-    wh_rm = webhook_subparsers.add_parser(
-        "remove", aliases=["rm"], help="Remove a subscription"
-    )
-    wh_rm.add_argument("name", help="Subscription name to remove")
-
-    wh_test = webhook_subparsers.add_parser(
-        "test", help="Send a test POST to a webhook route"
-    )
-    wh_test.add_argument("name", help="Subscription name to test")
-    wh_test.add_argument(
-        "--payload", default="", help="JSON payload to send (default: test payload)"
-    )
-
-    webhook_parser.set_defaults(func=cmd_webhook)
 
     # =========================================================================
     # kanban command — multi-profile collaboration board
@@ -10272,7 +9902,7 @@ Examples:
         "approve", help="Approve a pairing code"
     )
     pairing_approve_parser.add_argument(
-        "platform", help="Platform name (telegram, discord, slack, whatsapp)"
+        "platform", help="Platform name (feishu)"
     )
     pairing_approve_parser.add_argument("code", help="Pairing code to approve")
 
@@ -10726,7 +10356,7 @@ Examples:
         "tools",
         help="Configure which tools are enabled per platform",
         description=(
-            "Enable, disable, or list tools for CLI, Telegram, Discord, etc.\n\n"
+            "Enable, disable, or list tools for CLI and Feishu/Lark.\n\n"
             "Built-in toolsets use plain names (e.g. web, memory).\n"
             "MCP tools use server:tool notation (e.g. github:create_issue).\n\n"
             "Run 'hermes tools' with no subcommand for the interactive configuration UI."
@@ -10960,7 +10590,7 @@ Examples:
 
     sessions_list = sessions_subparsers.add_parser("list", help="List recent sessions")
     sessions_list.add_argument(
-        "--source", help="Filter by source (cli, telegram, discord, etc.)"
+        "--source", help="Filter by source (cli or feishu)"
     )
     sessions_list.add_argument(
         "--limit", type=int, default=20, help="Max sessions to show"
@@ -11008,7 +10638,7 @@ Examples:
         help="Interactive session picker — browse, search, and resume sessions",
     )
     sessions_browse.add_argument(
-        "--source", help="Filter by source (cli, telegram, discord, etc.)"
+        "--source", help="Filter by source (cli or feishu)"
     )
     sessions_browse.add_argument(
         "--limit", type=int, default=500, help="Max sessions to load (default: 500)"
@@ -11172,7 +10802,7 @@ Examples:
             msgs = db.message_count()
             print(f"Total sessions: {total}")
             print(f"Total messages: {msgs}")
-            for src in ["cli", "telegram", "discord", "whatsapp", "slack"]:
+            for src in ["cli", "feishu"]:
                 c = db.session_count(source=src)
                 if c > 0:
                     print(f"  {src}: {c} sessions")
@@ -11200,7 +10830,7 @@ Examples:
         "--days", type=int, default=30, help="Number of days to analyze (default: 30)"
     )
     insights_parser.add_argument(
-        "--source", help="Filter by platform (cli, telegram, discord, etc.)"
+        "--source", help="Filter by platform (cli or feishu)"
     )
 
     def cmd_insights(args):
@@ -11258,7 +10888,7 @@ Examples:
     claw_migrate.add_argument(
         "--migrate-secrets",
         action="store_true",
-        help="Include allowlisted secrets (TELEGRAM_BOT_TOKEN, API keys, etc.). "
+        help="Include allowlisted secrets (FEISHU_APP_SECRET, API keys, etc.). "
         "Required even under --preset full.",
     )
     claw_migrate.add_argument(

@@ -164,7 +164,6 @@ def _config_overrides(config: dict) -> dict[str, str]:
         ("display", "skin"),
         ("display", "show_reasoning"),
         ("privacy", "redact_pii"),
-        ("tts", "provider"),
     ]
 
     for section, key in interesting_paths:
@@ -283,8 +282,6 @@ def run_dump(args):
         ("FIRECRAWL_API_KEY", "firecrawl"),
         ("TAVILY_API_KEY", "tavily"),
         ("BROWSERBASE_API_KEY", "browserbase"),
-        ("FAL_KEY", "fal"),
-        ("ELEVENLABS_API_KEY", "elevenlabs"),
         ("GITHUB_TOKEN", "github"),
     ]
 

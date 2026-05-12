@@ -1461,7 +1461,7 @@ class AIAgent:
             # handler level inside hermes_logging.py, not here.
             pass
         
-        # Internal stream callback (set during streaming TTS).
+        # Internal stream callback (set by optional stream consumers).
         # Initialized here so _vprint can reference it before run_conversation.
         self._stream_callback = None
         # Deferred paragraph break flag — set after tool iterations so a
@@ -2766,7 +2766,7 @@ class AIAgent:
         """Verbose print — suppressed when actively streaming tokens.
 
         Pass ``force=True`` for error/warning messages that should always be
-        shown even during streaming playback (TTS or display).
+        shown even during streaming display playback.
 
         During tool execution (``_executing_tools`` is True), printing is
         allowed even with stream consumers registered because no tokens
@@ -7534,7 +7534,7 @@ class AIAgent:
             logger.debug("interim_assistant_callback error", exc_info=True)
 
     def _fire_stream_delta(self, text: str) -> None:
-        """Fire all registered stream delta callbacks (display + TTS)."""
+        """Fire all registered stream delta callbacks."""
         # If a tool iteration set the break flag, prepend a single paragraph
         # break before the first real text delta.  This prevents the original
         # problem (text concatenation across tool boundaries) without stacking
@@ -11607,7 +11607,7 @@ class AIAgent:
             conversation_history (List[Dict]): Previous conversation messages (optional)
             task_id (str): Unique identifier for this task to isolate VMs between concurrent tasks (optional, auto-generated if not provided)
             stream_callback: Optional callback invoked with each text delta during streaming.
-                Used by the TTS pipeline to start audio generation before the full response.
+                Used by stream consumers that need deltas before the full response.
                 When None (default), API calls use the standard non-streaming path.
             persist_user_message: Optional clean user message to store in
                 transcripts/history when user_message contains API-only
@@ -12499,7 +12499,7 @@ class AIAgent:
                     ):
                         _use_streaming = False
                     elif not self._has_stream_consumers():
-                        # No display/TTS consumer. Still prefer streaming for
+                        # No display consumer. Still prefer streaming for
                         # health checking, but skip for Mock clients in tests
                         # (mocks return SimpleNamespace, not stream iterators).
                         from unittest.mock import Mock
@@ -14702,8 +14702,8 @@ class AIAgent:
                     # box) before tool execution begins.  Intermediate turns may
                     # have streamed early content that opened the response box;
                     # flushing here prevents it from wrapping tool feed lines.
-                    # Only signal the display callback — TTS (_stream_callback)
-                    # should NOT receive None (it uses None as end-of-stream).
+                    # Only signal the display callback; the optional internal
+                    # stream callback treats None as end-of-stream.
                     if self.stream_delta_callback:
                         try:
                             self.stream_delta_callback(None)

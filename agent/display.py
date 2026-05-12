@@ -182,7 +182,6 @@ def build_tool_preview(tool_name: str, args: dict, max_len: int | None = None) -
         "read_file": "path", "write_file": "path", "patch": "path",
         "search_files": "pattern", "browser_navigate": "url",
         "browser_click": "ref", "browser_type": "text",
-        "image_generate": "prompt", "text_to_speech": "text",
         "vision_analyze": "question", "mixture_of_agents": "user_prompt",
         "skill_view": "name", "skills_list": "category",
         "cronjob": "action",
@@ -959,10 +958,6 @@ def get_cute_tool_message(
         return _wrap(f"┊ 📚 skills    list {args.get('category', 'all')}  {dur}")
     if tool_name == "skill_view":
         return _wrap(f"┊ 📚 skill     {_trunc(args.get('name', ''), 30)}  {dur}")
-    if tool_name == "image_generate":
-        return _wrap(f"┊ 🎨 create    {_trunc(args.get('prompt', ''), 35)}  {dur}")
-    if tool_name == "text_to_speech":
-        return _wrap(f"┊ 🔊 speak     {_trunc(args.get('text', ''), 30)}  {dur}")
     if tool_name == "vision_analyze":
         return _wrap(f"┊ 👁️  vision    {_trunc(args.get('question', ''), 30)}  {dur}")
     if tool_name == "mixture_of_agents":
@@ -1004,5 +999,4 @@ def get_cute_tool_message(
 # =========================================================================
 # Honcho session line (one-liner with clickable OSC 8 hyperlink)
 # =========================================================================
-
 

@@ -2629,13 +2629,13 @@ class HermesCLI:
         # Voice mode state (also reinitialized inside run() for interactive TUI).
         self._voice_lock = threading.Lock()
         self._voice_mode = False
-        self._voice_tts = False
+        self._voice_speech_output = False
         self._voice_recorder = None
         self._voice_recording = False
         self._voice_processing = False
         self._voice_continuous = False
-        self._voice_tts_done = threading.Event()
-        self._voice_tts_done.set()
+        self._voice_speech_done = threading.Event()
+        self._voice_speech_done.set()
 
         # Status bar visibility (toggled via /statusbar)
         self._status_bar_visible = True
@@ -3037,9 +3037,8 @@ class HermesCLI:
             return [("class:voice-status", " ◉ Transcribing... ")]
         if compact:
             return [("class:voice-status", f" 🎤 {label} ")]
-        tts = " | TTS on" if self._voice_tts else ""
         cont = " | Continuous" if self._voice_continuous else ""
-        return [("class:voice-status", f" 🎤 Voice mode{tts}{cont}  —  {label} to record ")]
+        return [("class:voice-status", f" 🎤 Voice mode{cont}  —  {label} to record ")]
 
     def _build_status_bar_text(self, width: Optional[int] = None) -> str:
         """Return a compact one-line session status string for the TUI footer."""
@@ -9515,70 +9514,17 @@ class HermesCLI:
                 threading.Thread(target=_restart_recording, daemon=True).start()
 
     def _voice_speak_response_async(self, text: str) -> None:
-        """Schedule TTS and mark it pending before continuous recording can restart."""
-        if not self._voice_tts or not text:
-            return
-        self._voice_tts_done.clear()
-        threading.Thread(
-            target=self._voice_speak_response,
-            args=(text,),
-            daemon=True,
-        ).start()
+        """Speech output was removed; keep the voice wait gate open."""
+        self._voice_speech_output = False
+        self._voice_speech_done.set()
 
     def _voice_speak_response(self, text: str):
-        """Speak the agent's response aloud using TTS (runs in background thread)."""
-        if not self._voice_tts:
-            return
-        self._voice_tts_done.clear()
-        try:
-            from tools.tts_tool import text_to_speech_tool
-            from tools.voice_mode import play_audio_file
-
-            # Strip markdown and non-speech content for cleaner TTS
-            tts_text = text[:4000] if len(text) > 4000 else text
-            tts_text = re.sub(r'```[\s\S]*?```', ' ', tts_text)   # fenced code blocks
-            tts_text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', tts_text)  # [text](url) -> text
-            tts_text = re.sub(r'https?://\S+', '', tts_text)      # URLs
-            tts_text = re.sub(r'\*\*(.+?)\*\*', r'\1', tts_text)  # bold
-            tts_text = re.sub(r'\*(.+?)\*', r'\1', tts_text)      # italic
-            tts_text = re.sub(r'`(.+?)`', r'\1', tts_text)        # inline code
-            tts_text = re.sub(r'^#+\s*', '', tts_text, flags=re.MULTILINE)  # headers
-            tts_text = re.sub(r'^\s*[-*]\s+', '', tts_text, flags=re.MULTILINE)  # list items
-            tts_text = re.sub(r'---+', '', tts_text)              # horizontal rules
-            tts_text = re.sub(r'\n{3,}', '\n\n', tts_text)        # excessive newlines
-            tts_text = tts_text.strip()
-            if not tts_text:
-                return
-
-            # Use MP3 output for CLI playback (afplay doesn't handle OGG well).
-            # The TTS tool may auto-convert MP3->OGG, but the original MP3 remains.
-            os.makedirs(os.path.join(tempfile.gettempdir(), "hermes_voice"), exist_ok=True)
-            mp3_path = os.path.join(
-                tempfile.gettempdir(), "hermes_voice",
-                f"tts_{time.strftime('%Y%m%d_%H%M%S')}.mp3",
-            )
-
-            text_to_speech_tool(text=tts_text, output_path=mp3_path)
-
-            # Play the MP3 directly (the TTS tool returns OGG path but MP3 still exists)
-            if os.path.isfile(mp3_path) and os.path.getsize(mp3_path) > 0:
-                play_audio_file(mp3_path)
-                # Clean up
-                try:
-                    os.unlink(mp3_path)
-                    ogg_path = mp3_path.rsplit(".", 1)[0] + ".ogg"
-                    if os.path.isfile(ogg_path):
-                        os.unlink(ogg_path)
-                except OSError:
-                    pass
-        except Exception as e:
-            logger.warning("Voice TTS playback failed: %s", e)
-            _cprint(f"{_DIM}TTS playback failed: {e}{_RST}")
-        finally:
-            self._voice_tts_done.set()
+        """Speech output was removed; this path intentionally does nothing."""
+        self._voice_speech_output = False
+        self._voice_speech_done.set()
 
     def _handle_voice_command(self, command: str):
-        """Handle /voice [on|off|tts|status] command."""
+        """Handle /voice [on|off|status] command."""
         parts = command.strip().split(maxsplit=1)
         subcommand = parts[1].lower().strip() if len(parts) > 1 else ""
 
@@ -9586,8 +9532,6 @@ class HermesCLI:
             self._enable_voice_mode()
         elif subcommand == "off":
             self._disable_voice_mode()
-        elif subcommand == "tts":
-            self._toggle_voice_tts()
         elif subcommand == "status":
             self._show_voice_status()
         elif subcommand == "":
@@ -9598,7 +9542,7 @@ class HermesCLI:
                 self._enable_voice_mode()
         else:
             _cprint(f"Unknown voice subcommand: {subcommand}")
-            _cprint("Usage: /voice [on|off|tts|status]")
+            _cprint("Usage: /voice [on|off|status]")
 
     def _voice_beeps_enabled(self) -> bool:
         """Return whether CLI voice mode should play record start/stop beeps."""
@@ -9644,35 +9588,21 @@ class HermesCLI:
         with self._voice_lock:
             self._voice_mode = True
 
-        # Check config for auto_tts (shape-safe — malformed ``voice:`` YAML
-        # leaves ``voice_config`` as a non-dict, so guard before .get()).
-        try:
-            from hermes_cli.config import load_config
-            _raw_voice = load_config().get("voice")
-            voice_config = _raw_voice if isinstance(_raw_voice, dict) else {}
-            if voice_config.get("auto_tts", False):
-                with self._voice_lock:
-                    self._voice_tts = True
-        except Exception:
-            pass
-
         # Voice mode instruction is injected as a user message prefix (not a
         # system prompt change) to avoid invalidating the prompt cache.  See
         # _voice_message_prefix property and its usage in _process_message().
 
-        tts_status = " (TTS enabled)" if self._voice_tts else ""
         # Use the startup-pinned cache so the advertised shortcut always
         # matches the live prompt_toolkit binding — reading live config
         # here would drift after a mid-session config edit (Copilot
         # round-14 on #19835, same class as round-13).
         _ptt_display = self._voice_record_key_label()
-        _cprint(f"\n{_ACCENT}Voice mode enabled{tts_status}{_RST}")
+        _cprint(f"\n{_ACCENT}Voice mode enabled{_RST}")
         _cprint(f"  {_DIM}{_ptt_display} to start/stop recording{_RST}")
-        _cprint(f"  {_DIM}/voice tts  to toggle speech output{_RST}")
         _cprint(f"  {_DIM}/voice off  to disable voice mode{_RST}")
 
     def _disable_voice_mode(self):
-        """Disable voice mode, cancel any active recording, and stop TTS."""
+        """Disable voice mode and cancel any active recording."""
         recorder = None
         with self._voice_lock:
             if self._voice_recording and self._voice_recorder:
@@ -9680,7 +9610,7 @@ class HermesCLI:
                 self._voice_recording = False
             recorder = self._voice_recorder
             self._voice_mode = False
-            self._voice_tts = False
+            self._voice_speech_output = False
             self._voice_continuous = False
 
         # Shut down the persistent audio stream in background
@@ -9693,32 +9623,20 @@ class HermesCLI:
             threading.Thread(target=_bg_shutdown, daemon=True).start()
             self._voice_recorder = None
 
-        # Stop any active TTS playback
         try:
             from tools.voice_mode import stop_playback
             stop_playback()
         except Exception:
             pass
-        self._voice_tts_done.set()
+        self._voice_speech_done.set()
 
         _cprint(f"\n{_DIM}Voice mode disabled.{_RST}")
 
-    def _toggle_voice_tts(self):
-        """Toggle TTS output for voice mode."""
-        if not self._voice_mode:
-            _cprint(f"{_DIM}Enable voice mode first: /voice on{_RST}")
-            return
-
+    def _toggle_voice_speech_output(self):
+        """Inform users that speech output is no longer available."""
         with self._voice_lock:
-            self._voice_tts = not self._voice_tts
-        status = "enabled" if self._voice_tts else "disabled"
-
-        if self._voice_tts:
-            from tools.tts_tool import check_tts_requirements
-            if not check_tts_requirements():
-                _cprint(f"{_DIM}Warning: No TTS provider available. Install edge-tts or set API keys.{_RST}")
-
-        _cprint(f"{_ACCENT}Voice TTS {status}.{_RST}")
+            self._voice_speech_output = False
+        _cprint(f"{_DIM}Speech output has been removed. Voice input still works with /voice on.{_RST}")
 
     def _show_voice_status(self):
         """Show current voice mode status."""
@@ -9728,7 +9646,6 @@ class HermesCLI:
 
         _cprint(f"\n{_BOLD}Voice Mode Status{_RST}")
         _cprint(f"  Mode:      {'ON' if self._voice_mode else 'OFF'}")
-        _cprint(f"  TTS:       {'ON' if self._voice_tts else 'OFF'}")
         _cprint(f"  Recording: {'YES' if self._voice_recording else 'no'}")
         # Display the startup-pinned label so /voice status always
         # matches the live prompt_toolkit binding (Copilot round-14 on
@@ -10324,65 +10241,14 @@ class HermesCLI:
             # reset at the start of each user turn.
             self._reasoning_shown_this_turn = False
 
-            # --- Streaming TTS setup ---
-            # When ElevenLabs is the TTS provider and sounddevice is available,
-            # we stream audio sentence-by-sentence as the agent generates tokens
-            # instead of waiting for the full response.
-            use_streaming_tts = False
+            # Speech output has been removed; keep the legacy streaming
+            # variables initialized so the surrounding flow remains simple.
+            use_streaming_speech = False
             _streaming_box_opened = False
             text_queue = None
-            tts_thread = None
+            speech_thread = None
             stream_callback = None
             stop_event = None
-
-            if self._voice_tts:
-                try:
-                    from tools.tts_tool import (
-                        _load_tts_config as _load_tts_cfg,
-                        _get_provider as _get_prov,
-                        _import_elevenlabs,
-                        _import_sounddevice,
-                        stream_tts_to_speaker,
-                    )
-                    _tts_cfg = _load_tts_cfg()
-                    if _get_prov(_tts_cfg) == "elevenlabs":
-                        # Verify both ElevenLabs SDK and audio output are available
-                        _import_elevenlabs()
-                        _import_sounddevice()
-                        use_streaming_tts = True
-                except (ImportError, OSError):
-                    pass
-                except Exception:
-                    pass
-
-            if use_streaming_tts:
-                text_queue = queue.Queue()
-                stop_event = threading.Event()
-
-                def display_callback(sentence: str):
-                    """Called by TTS consumer when a sentence is ready to display + speak."""
-                    nonlocal _streaming_box_opened
-                    if not _streaming_box_opened:
-                        _streaming_box_opened = True
-                        w = self.console.width
-                        label = " ⚕ Hermes "
-                        if self.show_timestamps:
-                            label = f"{label}{datetime.now().strftime('%H:%M')} "
-                        fill = w - 2 - len(label)
-                        _cprint(f"\n{_ACCENT}╭─{label}{'─' * max(fill - 1, 0)}╮{_RST}")
-                    _cprint(f"{_STREAM_PAD}{sentence.rstrip()}")
-
-                tts_thread = threading.Thread(
-                    target=stream_tts_to_speaker,
-                    args=(text_queue, stop_event, self._voice_tts_done),
-                    kwargs={"display_callback": display_callback},
-                    daemon=True,
-                )
-                tts_thread.start()
-
-                def stream_callback(delta: str):
-                    if text_queue is not None:
-                        text_queue.put(delta)
 
             # When voice mode is active, prepend a brief instruction so the
             # model responds concisely. The prefix is API-call-local only —
@@ -10477,7 +10343,7 @@ class HermesCLI:
                             if self._clarify_state or self._clarify_freetext:
                                 continue
                             print("\n⚡ New message detected, interrupting...")
-                            # Signal TTS to stop on interrupt
+                            # Signal any stream consumer to stop on interrupt
                             if stop_event is not None:
                                 stop_event.set()
                             self.agent.interrupt(interrupt_msg)
@@ -10551,11 +10417,11 @@ class HermesCLI:
             # Flush any remaining streamed text and close the box
             self._flush_stream()
 
-            # Signal end-of-text to TTS consumer and wait for it to finish
-            if use_streaming_tts and text_queue is not None:
+            # Signal end-of-text to any stream consumer and wait for it to finish
+            if use_streaming_speech and text_queue is not None:
                 text_queue.put(None)  # sentinel
-                if tts_thread is not None:
-                    tts_thread.join(timeout=120)
+                if speech_thread is not None:
+                    speech_thread.join(timeout=120)
 
             # Drain any remaining agent output still in the StdoutProxy
             # buffer so tool/status lines render ABOVE our response box.
@@ -10678,7 +10544,7 @@ class HermesCLI:
 
                 is_error_response = result and (result.get("failed") or result.get("partial"))
                 already_streamed = self._stream_started and self._stream_box_opened and not is_error_response
-                if use_streaming_tts and _streaming_box_opened and not is_error_response:
+                if use_streaming_speech and _streaming_box_opened and not is_error_response:
                     # Text was already printed sentence-by-sentence; just close the box
                     w = shutil.get_terminal_size().columns
                     _cprint(f"\n{_ACCENT}╰{'─' * (w - 2)}╯{_RST}")
@@ -10715,12 +10581,6 @@ class HermesCLI:
                         f"({_api_calls}/{_max_iter}) — "
                         f"response may be incomplete{_RST}"
                     )
-
-            # Speak response aloud if voice TTS is enabled
-            # Skip batch TTS when streaming TTS already handled it
-            if self._voice_tts and response and not use_streaming_tts:
-                self._voice_speak_response_async(response)
-
 
             # Re-queue the interrupt message (and any that arrived while we were
             # processing the first) as the next prompt for process_loop.
@@ -10759,10 +10619,10 @@ class HermesCLI:
             print(f"Error: {e}")
             return None
         finally:
-            # Ensure streaming TTS resources are cleaned up even on error.
+            # Ensure streaming consumer resources are cleaned up even on error.
             # Normal path sends the sentinel at line ~3568; this is a safety
             # net for exception paths that skip it.  Duplicate sentinels are
-            # harmless — stream_tts_to_speaker exits on the first None.
+            # harmless — consumers exit on the first None.
             if text_queue is not None:
                 try:
                     text_queue.put_nowait(None)
@@ -10770,8 +10630,8 @@ class HermesCLI:
                     pass
             if stop_event is not None:
                 stop_event.set()
-            if tts_thread is not None and tts_thread.is_alive():
-                tts_thread.join(timeout=5)
+            if speech_thread is not None and speech_thread.is_alive():
+                speech_thread.join(timeout=5)
     
     def _print_exit_summary(self):
         """Print session resume info on exit, similar to Claude Code."""
@@ -11171,13 +11031,13 @@ class HermesCLI:
         # Voice mode state (protected by _voice_lock for cross-thread access)
         self._voice_lock = threading.Lock()
         self._voice_mode = False        # Whether voice mode is enabled
-        self._voice_tts = False         # Whether TTS output is enabled
+        self._voice_speech_output = False         # Legacy speech-output flag; always disabled
         self._voice_recorder = None     # AudioRecorder instance (lazy init)
         self._voice_recording = False   # Whether currently recording
         self._voice_processing = False  # Whether STT is in progress
         self._voice_continuous = False  # Whether to auto-restart after agent responds
-        self._voice_tts_done = threading.Event()  # Signals TTS playback finished
-        self._voice_tts_done.set()  # Initially "done" (no TTS pending)
+        self._voice_speech_done = threading.Event()  # Legacy speech-output completion flag
+        self._voice_speech_done.set()  # Initially "done" (no speech output pending)
 
         # Register callbacks so terminal_tool prompts route through our UI
         set_sudo_password_callback(self._sudo_password_callback)
@@ -11935,13 +11795,13 @@ class HermesCLI:
                 if cli_ref._voice_processing:
                     return
 
-                # Interrupt TTS if playing, so user can start talking.
+                # Interrupt any audio playback, so user can start talking.
                 # stop_playback() is fast (just terminates a subprocess).
-                if not cli_ref._voice_tts_done.is_set():
+                if not cli_ref._voice_speech_done.is_set():
                     try:
                         from tools.voice_mode import stop_playback
                         stop_playback()
-                        cli_ref._voice_tts_done.set()
+                        cli_ref._voice_speech_done.set()
                     except Exception:
                         pass
 
@@ -12982,8 +12842,8 @@ class HermesCLI:
                         if self._voice_mode and self._voice_continuous and not self._voice_recording:
                             def _restart_recording():
                                 try:
-                                    if self._voice_tts:
-                                        self._voice_tts_done.wait(timeout=60)
+                                    if self._voice_speech_output:
+                                        self._voice_speech_done.wait(timeout=60)
                                         time.sleep(0.3)
                                     self._voice_start_recording()
                                     app.invalidate()

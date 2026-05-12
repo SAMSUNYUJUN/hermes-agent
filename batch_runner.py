@@ -17,7 +17,7 @@ Usage:
     python batch_runner.py --dataset_file=data.jsonl --batch_size=10 --run_name=my_run --resume
     
     # Use a specific toolset distribution
-    python batch_runner.py --dataset_file=data.jsonl --batch_size=10 --run_name=my_run --distribution=image_gen
+    python batch_runner.py --dataset_file=data.jsonl --batch_size=10 --run_name=my_run --distribution=research
 """
 
 # IMPORTANT: hermes_bootstrap must be the very first import — UTF-8 stdio
@@ -1186,7 +1186,7 @@ def main(
         python batch_runner.py --dataset_file=data.jsonl --batch_size=10 --run_name=my_run --resume
         
         # Use specific distribution
-        python batch_runner.py --dataset_file=data.jsonl --batch_size=10 --run_name=image_test --distribution=image_gen
+        python batch_runner.py --dataset_file=data.jsonl --batch_size=10 --run_name=research_test --distribution=research
         
         # With disabled reasoning and max tokens
         python batch_runner.py --dataset_file=data.jsonl --batch_size=10 --run_name=my_run \\
@@ -1299,4 +1299,3 @@ def main(
 
 if __name__ == "__main__":
     fire.Fire(main)
-

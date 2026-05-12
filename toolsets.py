@@ -35,8 +35,8 @@ _HERMES_CORE_TOOLS = [
     "terminal", "process",
     # File manipulation
     "read_file", "write_file", "patch", "search_files",
-    # Vision + image generation
-    "vision_analyze", "image_generate",
+    # Vision
+    "vision_analyze",
     # Skills
     "skills_list", "skill_view", "skill_manage",
     # Browser automation
@@ -44,8 +44,6 @@ _HERMES_CORE_TOOLS = [
     "browser_type", "browser_scroll", "browser_back",
     "browser_press", "browser_get_images",
     "browser_vision", "browser_console", "browser_cdp", "browser_dialog",
-    # Text-to-speech
-    "text_to_speech",
     # Planning & memory
     "todo", "memory",
     # Session history search
@@ -56,10 +54,8 @@ _HERMES_CORE_TOOLS = [
     "execute_code", "delegate_task",
     # Cronjob management
     "cronjob",
-    # Cross-platform messaging (gated on gateway running via check_fn)
+    # Feishu messaging (gated on gateway running via check_fn)
     "send_message",
-    # Home Assistant smart home control (gated on HASS_TOKEN via check_fn)
-    "ha_list_entities", "ha_get_state", "ha_list_services", "ha_call_service",
     # Kanban multi-agent coordination — only in schema when the agent is
     # spawned as a kanban worker (HERMES_KANBAN_TASK env set) or the current
     # profile explicitly enables the kanban toolset. Gated via check_fn in
@@ -101,12 +97,6 @@ TOOLSETS = {
         "includes": []
     },
     
-    "image_gen": {
-        "description": "Creative generation tools (images)",
-        "tools": ["image_generate"],
-        "includes": []
-    },
-
     "computer_use": {
         "description": (
             "Background macOS desktop control via cua-driver — screenshots, "
@@ -154,7 +144,7 @@ TOOLSETS = {
     },
     
     "messaging": {
-        "description": "Cross-platform messaging: send messages to Telegram, Discord, Slack, SMS, etc.",
+        "description": "Feishu/Lark messaging: send messages to configured chats.",
         "tools": ["send_message"],
         "includes": []
     },
@@ -174,12 +164,6 @@ TOOLSETS = {
     "file": {
         "description": "File manipulation tools: read, write, patch (with fuzzy matching), and search (content + files)",
         "tools": ["read_file", "write_file", "patch", "search_files"],
-        "includes": []
-    },
-    
-    "tts": {
-        "description": "Text-to-speech: convert text to audio with Edge TTS (free), ElevenLabs, OpenAI, or xAI",
-        "tools": ["text_to_speech"],
         "includes": []
     },
     
@@ -222,12 +206,6 @@ TOOLSETS = {
     # "honcho" toolset removed — Honcho is now a memory provider plugin.
     # Tools are injected via MemoryManager, not the toolset system.
 
-    "homeassistant": {
-        "description": "Home Assistant smart home control and monitoring",
-        "tools": ["ha_list_entities", "ha_get_state", "ha_list_services", "ha_call_service"],
-        "includes": []
-    },
-
     "kanban": {
         "description": (
             "Kanban multi-agent coordination — only active when the agent "
@@ -245,30 +223,6 @@ TOOLSETS = {
             "kanban_unblock",
         ],
         "includes": [],
-    },
-
-    "discord": {
-        "description": "Discord read and participate tools (fetch messages, search members, create threads)",
-        "tools": ["discord"],
-        "includes": [],
-    },
-
-    "discord_admin": {
-        "description": "Discord server management (list channels/roles, pin messages, assign roles)",
-        "tools": ["discord_admin"],
-        "includes": [],
-    },
-
-    "yuanbao": {
-        "description": "Yuanbao platform tools - group info, member queries, DM, stickers",
-        "tools": [
-            "yb_query_group_info",
-            "yb_query_group_members",
-            "yb_send_dm",
-            "yb_search_sticker",
-            "yb_send_sticker",
-        ],
-        "includes": []
     },
 
     "feishu_doc": {
@@ -307,7 +261,7 @@ TOOLSETS = {
     "safe": {
         "description": "Safe toolkit without terminal access",
         "tools": [],
-        "includes": ["web", "vision", "image_gen"]
+        "includes": ["web", "vision"]
     },
     
     # ==========================================================================
@@ -345,8 +299,8 @@ TOOLSETS = {
             "terminal", "process",
             # File manipulation
             "read_file", "write_file", "patch", "search_files",
-            # Vision + image generation
-            "vision_analyze", "image_generate",
+            # Vision
+            "vision_analyze",
             # Skills
             "skills_list", "skill_view", "skill_manage",
             # Browser automation
@@ -362,8 +316,6 @@ TOOLSETS = {
             "execute_code", "delegate_task",
             # Cronjob management
             "cronjob",
-            # Home Assistant smart home control (gated on HASS_TOKEN via check_fn)
-            "ha_list_entities", "ha_get_state", "ha_list_services", "ha_call_service",
 
         ],
         "includes": []
@@ -379,78 +331,9 @@ TOOLSETS = {
         # Mirrors hermes-cli so cron's "default" toolset is the same set of
         # core tools users see interactively — then `hermes tools` filters
         # them down per the platform config. _DEFAULT_OFF_TOOLSETS (moa,
-        # homeassistant, rl) are excluded by _get_platform_tools() unless
+        # rl) are excluded by _get_platform_tools() unless
         # the user explicitly enables them.
         "description": "Default cron toolset - same core tools as hermes-cli; gated by `hermes tools`",
-        "tools": _HERMES_CORE_TOOLS,
-        "includes": []
-    },
-
-    "hermes-telegram": {
-        "description": "Telegram bot toolset - full access for personal use (terminal has safety checks)",
-        "tools": _HERMES_CORE_TOOLS,
-        "includes": []
-    },
-    
-    "hermes-discord": {
-        "description": "Discord bot toolset - full access (terminal has safety checks via dangerous command approval)",
-        "tools": _HERMES_CORE_TOOLS + [
-            "discord",
-            "discord_admin",
-        ],
-        "includes": []
-    },
-    
-    "hermes-whatsapp": {
-        "description": "WhatsApp bot toolset - similar to Telegram (personal messaging, more trusted)",
-        "tools": _HERMES_CORE_TOOLS,
-        "includes": []
-    },
-    
-    "hermes-slack": {
-        "description": "Slack bot toolset - full access for workspace use (terminal has safety checks)",
-        "tools": _HERMES_CORE_TOOLS,
-        "includes": []
-    },
-    
-    "hermes-signal": {
-        "description": "Signal bot toolset - encrypted messaging platform (full access)",
-        "tools": _HERMES_CORE_TOOLS,
-        "includes": []
-    },
-
-    "hermes-bluebubbles": {
-        "description": "BlueBubbles iMessage bot toolset - Apple iMessage via local BlueBubbles server",
-        "tools": _HERMES_CORE_TOOLS,
-        "includes": []
-    },
-
-    "hermes-homeassistant": {
-        "description": "Home Assistant bot toolset - smart home event monitoring and control",
-        "tools": _HERMES_CORE_TOOLS,
-        "includes": []
-    },
-
-    "hermes-email": {
-        "description": "Email bot toolset - interact with Hermes via email (IMAP/SMTP)",
-        "tools": _HERMES_CORE_TOOLS,
-        "includes": []
-    },
-
-    "hermes-mattermost": {
-        "description": "Mattermost bot toolset - self-hosted team messaging (full access)",
-        "tools": _HERMES_CORE_TOOLS,
-        "includes": []
-    },
-
-    "hermes-matrix": {
-        "description": "Matrix bot toolset - decentralized encrypted messaging (full access)",
-        "tools": _HERMES_CORE_TOOLS,
-        "includes": []
-    },
-
-    "hermes-dingtalk": {
-        "description": "DingTalk bot toolset - enterprise messaging platform (full access)",
         "tools": _HERMES_CORE_TOOLS,
         "includes": []
     },
@@ -467,59 +350,10 @@ TOOLSETS = {
         "includes": []
     },
 
-    "hermes-weixin": {
-        "description": "Weixin bot toolset - personal WeChat messaging via iLink (full access)",
-        "tools": _HERMES_CORE_TOOLS,
-        "includes": []
-    },
-
-    "hermes-qqbot": {
-        "description": "QQBot toolset - QQ messaging via Official Bot API v2 (full access)",
-        "tools": _HERMES_CORE_TOOLS,
-        "includes": []
-    },
-
-    "hermes-wecom": {
-        "description": "WeCom bot toolset - enterprise WeChat messaging (full access)",
-        "tools": _HERMES_CORE_TOOLS,
-        "includes": []
-    },
-
-    "hermes-wecom-callback": {
-        "description": "WeCom callback toolset - enterprise self-built app messaging (full access)",
-        "tools": _HERMES_CORE_TOOLS,
-        "includes": []
-    },
-
-    "hermes-yuanbao": {
-        "description": "Yuanbao Bot 元宝消息平台工具集 - 群信息、成员查询、私聊、贴纸表情",
-        "tools": _HERMES_CORE_TOOLS + [
-            "yb_query_group_info",
-            "yb_query_group_members",
-            "yb_send_dm",
-            "yb_search_sticker",
-            "yb_send_sticker",
-        ],
-        "module": "tools.yuanbao_tools",
-        "includes": []
-    },
-
-    "hermes-sms": {
-        "description": "SMS bot toolset - interact with Hermes via SMS (Twilio)",
-        "tools": _HERMES_CORE_TOOLS,
-        "includes": []
-    },
-
-    "hermes-webhook": {
-        "description": "Webhook toolset - receive and process external webhook events",
-        "tools": _HERMES_CORE_TOOLS,
-        "includes": []
-    },
-
     "hermes-gateway": {
-        "description": "Gateway toolset - union of all messaging platform tools",
+        "description": "Gateway toolset - Feishu/Lark messaging platform tools",
         "tools": [],
-        "includes": ["hermes-telegram", "hermes-discord", "hermes-whatsapp", "hermes-slack", "hermes-signal", "hermes-bluebubbles", "hermes-homeassistant", "hermes-email", "hermes-sms", "hermes-mattermost", "hermes-matrix", "hermes-dingtalk", "hermes-feishu", "hermes-wecom", "hermes-wecom-callback", "hermes-weixin", "hermes-qqbot", "hermes-webhook", "hermes-yuanbao"]
+        "includes": ["hermes-feishu"]
     }
 }
 

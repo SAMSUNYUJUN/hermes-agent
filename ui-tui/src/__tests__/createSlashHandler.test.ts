@@ -237,7 +237,7 @@ describe('createSlashHandler', () => {
   // while push-to-talk still fires the old one until the next mtime
   // poll (~5s).
   it('/voice status renders the gateway record_key and pushes it into frontend state', async () => {
-    const rpc = vi.fn(() => Promise.resolve({ enabled: true, record_key: 'ctrl+space', tts: false }))
+    const rpc = vi.fn(() => Promise.resolve({ enabled: true, record_key: 'ctrl+space' }))
     const ctx = buildCtx({ gateway: { ...buildGateway(), rpc } })
 
     expect(createSlashHandler(ctx)('/voice status')).toBe(true)
@@ -250,7 +250,7 @@ describe('createSlashHandler', () => {
   })
 
   it('/voice on renders the configured binding for the start/stop hint', async () => {
-    const rpc = vi.fn(() => Promise.resolve({ enabled: true, record_key: 'alt+r', tts: false }))
+    const rpc = vi.fn(() => Promise.resolve({ enabled: true, record_key: 'alt+r' }))
     const ctx = buildCtx({ gateway: { ...buildGateway(), rpc } })
 
     expect(createSlashHandler(ctx)('/voice on')).toBe(true)
@@ -262,29 +262,13 @@ describe('createSlashHandler', () => {
   })
 
   it('/voice falls back to Ctrl+B when the gateway response omits record_key', async () => {
-    const rpc = vi.fn(() => Promise.resolve({ enabled: false, tts: false }))
+    const rpc = vi.fn(() => Promise.resolve({ enabled: false }))
     const ctx = buildCtx({ gateway: { ...buildGateway(), rpc } })
 
     expect(createSlashHandler(ctx)('/voice status')).toBe(true)
     await vi.waitFor(() => {
       expect(ctx.transcript.sys).toHaveBeenCalledWith('  Record key: Ctrl+B')
     })
-  })
-
-  // Round-2 Copilot review on #19835: a response missing ``record_key``
-  // (e.g. the old tts branch, or any future branch that forgets to
-  // include it) MUST NOT clobber the user's cached binding back to
-  // Ctrl+B. The label still renders the default for display; the
-  // frontend state keeps whatever was last authoritatively set.
-  it('/voice tts without record_key does not clobber cached frontend binding', async () => {
-    const rpc = vi.fn(() => Promise.resolve({ enabled: true, tts: true }))
-    const ctx = buildCtx({ gateway: { ...buildGateway(), rpc } })
-
-    expect(createSlashHandler(ctx)('/voice tts')).toBe(true)
-    await vi.waitFor(() => {
-      expect(ctx.transcript.sys).toHaveBeenCalledWith('Voice TTS enabled.')
-    })
-    expect(ctx.voice.setVoiceRecordKey).not.toHaveBeenCalled()
   })
 
   it('cycles details mode and persists it', async () => {

@@ -1299,21 +1299,6 @@ class BasePlatformAdapter(ABC):
         self._post_delivery_callbacks: Dict[str, Any] = {}
         self._expected_cancelled_tasks: set[asyncio.Task] = set()
         self._busy_session_handler: Optional[Callable[[MessageEvent, str], Awaitable[bool]]] = None
-        # Auto-TTS on voice input: ``_auto_tts_default`` is the global default
-        # (``voice.auto_tts`` in config.yaml, pushed by GatewayRunner on connect).
-        # Per-chat overrides live in two sets populated from ``_voice_mode``:
-        #   - ``_auto_tts_enabled_chats``: chat explicitly opted in via ``/voice on``
-        #     or ``/voice tts`` (mode is ``voice_only`` or ``all``). Fires even when
-        #     the global default is False.
-        #   - ``_auto_tts_disabled_chats``: chat explicitly opted out via
-        #     ``/voice off`` (mode is ``off``). Suppresses auto-TTS even when the
-        #     global default is True.
-        # The gate in _process_message() is:
-        #   fire if chat in _auto_tts_enabled_chats
-        #     OR (_auto_tts_default and chat not in _auto_tts_disabled_chats)
-        self._auto_tts_default: bool = False
-        self._auto_tts_enabled_chats: set = set()
-        self._auto_tts_disabled_chats: set = set()
         # Chats where typing indicator is paused (e.g. during approval waits).
         # _keep_typing skips send_typing when the chat_id is in this set.
         self._typing_paused: set = set()
@@ -1388,21 +1373,6 @@ class BasePlatformAdapter(ABC):
     @property
     def fatal_error_retryable(self) -> bool:
         return self._fatal_error_retryable
-
-    def _should_auto_tts_for_chat(self, chat_id: str) -> bool:
-        """Whether auto-TTS on voice input should fire for ``chat_id``.
-
-        Decision layers (Issue #16007):
-          1. Explicit ``/voice on`` or ``/voice tts`` → always fire (even if
-             ``voice.auto_tts`` is False).
-          2. Explicit ``/voice off`` → never fire.
-          3. Fall back to the global ``voice.auto_tts`` config default.
-        """
-        if chat_id in self._auto_tts_enabled_chats:
-            return True
-        if chat_id in self._auto_tts_disabled_chats:
-            return False
-        return bool(self._auto_tts_default)
 
     def set_fatal_error_handler(self, handler: Callable[["BasePlatformAdapter"], Awaitable[None] | None]) -> None:
         self._fatal_error_handler = handler
@@ -1948,20 +1918,6 @@ class BasePlatformAdapter(ABC):
             text = f"{caption}\n{text}"
         return await self.send(chat_id=chat_id, content=text, reply_to=reply_to, metadata=metadata)
 
-    async def play_tts(
-        self,
-        chat_id: str,
-        audio_path: str,
-        **kwargs,
-    ) -> SendResult:
-        """
-        Play auto-TTS audio for voice replies.
-
-        Override in subclasses for invisible playback (e.g. Web UI).
-        Default falls back to send_voice (shows audio player).
-        """
-        return await self.send_voice(chat_id=chat_id, audio_path=audio_path, **kwargs)
-
     async def send_video(
         self,
         chat_id: str,
@@ -2029,7 +1985,7 @@ class BasePlatformAdapter(ABC):
         """
         Extract MEDIA:<path> tags and [[audio_as_voice]] directives from response text.
 
-        The TTS tool returns responses like:
+        Audio-producing tools can return responses like:
             [[audio_as_voice]]
             MEDIA:/path/to/audio.ogg
 
@@ -2979,7 +2935,7 @@ class BasePlatformAdapter(ABC):
                 # where Telegram's sendPhoto recompression destroys legibility.
                 force_document_attachments = "[[as_document]]" in response
 
-                # Extract MEDIA:<path> tags (from TTS tool) before other processing
+                # Extract MEDIA:<path> tags before other processing
                 media_files, response = self.extract_media(response)
 
                 # Extract image URLs and send them as native platform attachments
@@ -2996,45 +2952,6 @@ class BasePlatformAdapter(ABC):
                 local_files, text_content = self.extract_local_files(text_content)
                 if local_files:
                     logger.info("[%s] extract_local_files found %d file(s) in response", self.name, len(local_files))
-                
-                # Auto-TTS: if voice message, generate audio FIRST (before sending text)
-                # Gated via ``_should_auto_tts_for_chat``: fires when the chat has
-                # an explicit ``/voice on|tts`` opt-in OR when ``voice.auto_tts`` is
-                # True globally and no ``/voice off`` has been issued.
-                _tts_path = None
-                if (self._should_auto_tts_for_chat(event.source.chat_id)
-                        and event.message_type == MessageType.VOICE
-                        and text_content
-                        and not media_files):
-                    try:
-                        from tools.tts_tool import text_to_speech_tool, check_tts_requirements
-                        if check_tts_requirements():
-                            import json as _json
-                            speech_text = re.sub(r'[*_`#\[\]()]', '', text_content)[:4000].strip()
-                            if not speech_text:
-                                raise ValueError("Empty text after markdown cleanup")
-                            tts_result_str = await asyncio.to_thread(
-                                text_to_speech_tool, text=speech_text
-                            )
-                            tts_data = _json.loads(tts_result_str)
-                            _tts_path = tts_data.get("file_path")
-                    except Exception as tts_err:
-                        logger.warning("[%s] Auto-TTS failed: %s", self.name, tts_err)
-
-                # Play TTS audio before text (voice-first experience)
-                if _tts_path and Path(_tts_path).exists():
-                    try:
-                        await self.play_tts(
-                            chat_id=event.source.chat_id,
-                            audio_path=_tts_path,
-                            metadata=_thread_metadata,
-                        )
-                    finally:
-                        try:
-                            os.remove(_tts_path)
-                        except OSError:
-                            pass
-
                 # Send the text portion
                 if text_content:
                     logger.info("[%s] Sending response (%d chars) to %s", self.name, len(text_content), event.source.chat_id)

@@ -1,18 +1,5 @@
 """Shared fixtures for gateway tests.
 
-The ``_ensure_telegram_mock`` helper guarantees that a minimal mock of
-the ``telegram`` package is registered in :data:`sys.modules` **before**
-any test file triggers ``from gateway.platforms.telegram import ...``.
-
-Without this, ``pytest-xdist`` workers that happen to collect
-``test_telegram_caption_merge.py`` (bare top-level import, no per-file
-mock) first will cache ``ChatType = None`` from the production
-ImportError fallback, causing 30+ downstream test failures wherever
-``ChatType.GROUP`` / ``ChatType.SUPERGROUP`` is accessed.
-
-Individual test files may still call their own ``_ensure_telegram_mock``
-— it short-circuits when the mock is already present.
-
 Plugin-adapter anti-pattern guard
 ---------------------------------
 Tests for platform plugins (``plugins/platforms/<name>/adapter.py``)
@@ -342,4 +329,3 @@ def pytest_configure(config):
             + "\n\n"
             + _GUARD_HINT
         )
-

@@ -633,41 +633,6 @@ def test_model_config_object_format(tmp_path: Path):
     assert "openai/gpt-4o" in config_text
 
 
-def test_tts_config_migrated(tmp_path: Path):
-    """TTS provider and voice settings migrate to config.yaml."""
-    mod = load_module()
-    source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
-    target.mkdir()
-    source.mkdir()
-
-    (source / "openclaw.json").write_text(
-        json.dumps({
-            "messages": {
-                "tts": {
-                    "provider": "elevenlabs",
-                    "elevenlabs": {
-                        "voiceId": "custom-voice-id",
-                        "modelId": "eleven_turbo_v2",
-                    },
-                }
-            }
-        }),
-        encoding="utf-8",
-    )
-    (target / "config.yaml").write_text("tts:\n  provider: edge\n", encoding="utf-8")
-
-    migrator = mod.Migrator(
-        source_root=source, target_root=target, execute=True,
-        workspace_target=None, overwrite=False, migrate_secrets=False, output_dir=None,
-        selected_options={"tts-config"},
-    )
-    report = migrator.migrate()
-    config_text = (target / "config.yaml").read_text(encoding="utf-8")
-    assert "elevenlabs" in config_text
-    assert "custom-voice-id" in config_text
-
-
 def test_shared_skills_migrated(tmp_path: Path):
     """Shared skills from ~/.openclaw/skills/ are migrated."""
     mod = load_module()

@@ -1,8 +1,7 @@
-"""Voice Mode -- Push-to-talk audio recording and playback for the CLI.
+"""Voice Mode -- Push-to-talk audio recording for the CLI.
 
 Provides audio capture via sounddevice, WAV encoding via stdlib wave,
-STT dispatch via tools.transcription_tools, and TTS playback via
-sounddevice or system audio players.
+and STT dispatch via tools.transcription_tools.
 
 Dependencies (optional):
     pip install sounddevice numpy

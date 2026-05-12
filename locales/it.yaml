@@ -325,9 +325,8 @@ gateway:
     save_failed:           "_(impossibile salvare nella configurazione: {error})_"
 
   voice:
-    enabled_voice_only:    "Modalità vocale attivata.\nRisponderò con la voce quando invii messaggi vocali.\nUsa /voice tts per ricevere risposte vocali per tutti i messaggi."
+    enabled_voice_only:    "Modalità vocale attivata."
     disabled_text:         "Modalità vocale disattivata. Risposte solo testuali."
-    tts_enabled:           "Auto-TTS attivato.\nTutte le risposte includeranno un messaggio vocale."
     status_mode:           "Modalità vocale: {label}"
     status_channel:        "Canale vocale: #{channel}"
     status_participants:   "Partecipanti: {count}"
@@ -337,7 +336,6 @@ gateway:
     disabled_short:        "Modalità vocale disattivata."
     label_off:             "Off (solo testo)"
     label_voice_only:      "On (risposta vocale ai messaggi vocali)"
-    label_all:             "TTS (risposta vocale a tutti i messaggi)"
 
   yolo:
     disabled:                   "⚠️ Modalità YOLO **OFF** per questa sessione — i comandi pericolosi richiederanno approvazione."

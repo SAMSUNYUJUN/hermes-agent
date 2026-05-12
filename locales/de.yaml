@@ -325,9 +325,8 @@ gateway:
     save_failed:           "_(konnte nicht in der Konfiguration gespeichert werden: {error})_"
 
   voice:
-    enabled_voice_only:    "Sprachmodus aktiviert.\nIch antworte mit Sprache, wenn Sie Sprachnachrichten senden.\nVerwenden Sie /voice tts für Sprachantworten auf alle Nachrichten."
+    enabled_voice_only:    "Sprachmodus aktiviert."
     disabled_text:         "Sprachmodus deaktiviert. Nur Textantworten."
-    tts_enabled:           "Auto-TTS aktiviert.\nAlle Antworten enthalten eine Sprachnachricht."
     status_mode:           "Sprachmodus: {label}"
     status_channel:        "Sprachkanal: #{channel}"
     status_participants:   "Teilnehmer: {count}"
@@ -337,7 +336,6 @@ gateway:
     disabled_short:        "Sprachmodus deaktiviert."
     label_off:             "Aus (nur Text)"
     label_voice_only:      "An (Sprachantwort auf Sprachnachrichten)"
-    label_all:             "TTS (Sprachantwort auf alle Nachrichten)"
 
   yolo:
     disabled:                   "⚠️ YOLO-Modus für diese Sitzung **AUS** — gefährliche Befehle benötigen eine Genehmigung."

@@ -351,7 +351,6 @@ export const ko: Translations = {
       security: "보안",
       browser: "브라우저",
       voice: "음성",
-      tts: "텍스트 음성 변환",
       stt: "음성 텍스트 변환",
       logging: "로깅",
       discord: "Discord",

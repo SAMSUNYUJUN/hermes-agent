@@ -340,9 +340,8 @@ gateway:
     save_failed:           "_(could not save to config: {error})_"
 
   voice:
-    enabled_voice_only:    "Voice mode enabled.\nI'll reply with voice when you send voice messages.\nUse /voice tts to get voice replies for all messages."
+    enabled_voice_only:    "Voice mode enabled."
     disabled_text:         "Voice mode disabled. Text-only replies."
-    tts_enabled:           "Auto-TTS enabled.\nAll replies will include a voice message."
     status_mode:           "Voice mode: {label}"
     status_channel:        "Voice channel: #{channel}"
     status_participants:   "Participants: {count}"
@@ -352,7 +351,6 @@ gateway:
     disabled_short:        "Voice mode disabled."
     label_off:             "Off (text only)"
     label_voice_only:      "On (voice reply to voice messages)"
-    label_all:             "TTS (voice reply to all messages)"
 
   yolo:
     disabled:                   "⚠️ YOLO mode **OFF** for this session — dangerous commands will require approval."

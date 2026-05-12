@@ -130,8 +130,7 @@ hermes claw migrate --overwrite  # 覆盖已有冲突
 - **技能** — 用户创建的技能 → `~/.hermes/skills/openclaw-imports/`
 - **命令白名单** — 审批模式
 - **消息设置** — 平台配置、允许用户、工作目录
-- **API 密钥** — 白名单中的密钥（Telegram、OpenRouter、OpenAI、Anthropic、ElevenLabs）
-- **TTS 资产** — 工作区音频文件
+- **API 密钥** — 白名单中的密钥（Telegram、OpenRouter、OpenAI、Anthropic）
 - **工作区指令** — AGENTS.md（使用 `--workspace-target`）
 
 使用 `hermes claw migrate --help` 查看所有选项，或使用 `openclaw-migration` 技能进行交互式代理引导迁移（含干运行预览）。

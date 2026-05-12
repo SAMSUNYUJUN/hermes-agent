@@ -325,9 +325,8 @@ gateway:
     save_failed:           "_（无法保存到配置：{error}）_"
 
   voice:
-    enabled_voice_only:    "语音模式已启用。\n当你发送语音消息时，我会用语音回复。\n使用 /voice tts 让所有消息都收到语音回复。"
+    enabled_voice_only:    "语音模式已启用。"
     disabled_text:         "语音模式已禁用。仅文本回复。"
-    tts_enabled:           "自动 TTS 已启用。\n所有回复都将包含一条语音消息。"
     status_mode:           "语音模式：{label}"
     status_channel:        "语音频道：#{channel}"
     status_participants:   "参与人数：{count}"
@@ -337,7 +336,6 @@ gateway:
     disabled_short:        "语音模式已禁用。"
     label_off:             "关闭（仅文本）"
     label_voice_only:      "开启（仅对语音消息进行语音回复）"
-    label_all:             "TTS（对所有消息进行语音回复）"
 
   yolo:
     disabled:                   "⚠️ 本会话 YOLO 模式 **已关闭** — 危险命令将需要批准。"

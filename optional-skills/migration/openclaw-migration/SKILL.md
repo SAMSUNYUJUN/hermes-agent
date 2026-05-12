@@ -41,7 +41,6 @@ It uses `scripts/openclaw_to_hermes.py` to:
 - migrate Hermes-compatible messaging settings such as `TELEGRAM_ALLOWED_USERS` and `MESSAGING_CWD`
 - copy OpenClaw skills into `~/.hermes/skills/openclaw-imports/`
 - optionally copy the OpenClaw workspace instructions file into a chosen Hermes workspace
-- mirror compatible workspace assets such as `workspace/tts/` into `~/.hermes/tts/`
 - archive non-secret docs that do not have a direct Hermes destination
 - produce a structured report listing migrated items, conflicts, skipped items, and reasons
 
@@ -215,7 +214,6 @@ Prefer these two presets in normal use:
 - `messaging-settings`
 - `command-allowlist`
 - `skills`
-- `tts-assets`
 - `archive`
 
 `full` includes everything in `user-data` plus:

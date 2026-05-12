@@ -325,9 +325,8 @@ gateway:
     save_failed:           "_(yapılandırmaya kaydedilemedi: {error})_"
 
   voice:
-    enabled_voice_only:    "Sesli mod etkinleştirildi.\nSesli mesaj gönderdiğinizde sesli yanıt vereceğim.\nTüm mesajlara sesli yanıt almak için /voice tts kullanın."
+    enabled_voice_only:    "Sesli mod etkinleştirildi."
     disabled_text:         "Sesli mod devre dışı. Yalnızca metin yanıtları."
-    tts_enabled:           "Otomatik TTS etkinleştirildi.\nTüm yanıtlar bir sesli mesaj içerecek."
     status_mode:           "Sesli mod: {label}"
     status_channel:        "Ses kanalı: #{channel}"
     status_participants:   "Katılımcılar: {count}"
@@ -337,7 +336,6 @@ gateway:
     disabled_short:        "Sesli mod devre dışı."
     label_off:             "Kapalı (yalnızca metin)"
     label_voice_only:      "Açık (sesli mesajlara sesli yanıt)"
-    label_all:             "TTS (tüm mesajlara sesli yanıt)"
 
   yolo:
     disabled:                   "⚠️ Bu oturumda YOLO modu **KAPALI** — tehlikeli komutlar onay gerektirecek."

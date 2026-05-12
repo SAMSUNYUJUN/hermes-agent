@@ -8,8 +8,8 @@ synced into those sandboxes so the agent can access them.
 **Credentials and skills** — session-scoped registry fed by skill declarations
 (``required_credential_files``) and user config (``terminal.credential_files``).
 
-**Cache directories** — gateway-cached uploads, browser screenshots, TTS
-audio, and processed images.  Mounted read-only so the remote terminal can
+**Cache directories** — gateway-cached uploads, browser screenshots, audio,
+and processed images.  Mounted read-only so the remote terminal can
 reference files the host side created (e.g. ``unzip`` an uploaded archive).
 
 Remote backends call :func:`get_credential_file_mounts`,
@@ -432,5 +432,4 @@ def iter_cache_files(
 def clear_credential_files() -> None:
     """Reset the skill-scoped registry (e.g. on session reset)."""
     _get_registered().clear()
-
 

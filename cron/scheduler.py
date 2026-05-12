@@ -1217,8 +1217,6 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
     #     and HERMES_SESSION_CHAT_ID to populate watcher_platform / chat_id,
     #     which would route completion notifications to the origin chat
     #     instead of via HERMES_CRON_AUTO_DELIVER_* below.
-    #   - tools/tts_tool.py: picks Opus vs MP3 based on
-    #     HERMES_SESSION_PLATFORM == "telegram".
     #   - tools/skills_tool.py + agent/prompt_builder.py: per-platform
     #     skill-disable lists and the system-prompt cache key both consume
     #     HERMES_SESSION_PLATFORM.

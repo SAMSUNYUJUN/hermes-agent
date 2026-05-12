@@ -347,7 +347,6 @@ export const zh: Translations = {
       security: "安全",
       browser: "浏览器",
       voice: "语音",
-      tts: "文字转语音",
       stt: "语音转文字",
       logging: "日志",
       discord: "Discord",

@@ -571,7 +571,7 @@ class TestDeliverResultWrapping:
             return future
 
         job = {
-            "id": "tts-job",
+            "id": "audio-job",
             "deliver": "origin",
             "origin": {"platform": "discord", "chat_id": "9876"},
         }
@@ -581,7 +581,7 @@ class TestDeliverResultWrapping:
              patch("asyncio.run_coroutine_threadsafe", side_effect=fake_run_coro):
             _deliver_result(
                 job,
-                "Here is TTS\nMEDIA:/tmp/cron-voice.mp3",
+                "Here is audio\nMEDIA:/tmp/cron-voice.mp3",
                 adapters={Platform.DISCORD: adapter},
                 loop=loop,
             )
@@ -590,7 +590,7 @@ class TestDeliverResultWrapping:
         adapter.send.assert_called_once()
         text_sent = adapter.send.call_args[0][1]
         assert "MEDIA:" not in text_sent
-        assert "Here is TTS" in text_sent
+        assert "Here is audio" in text_sent
 
         # Audio file should be sent as a voice attachment
         adapter.send_voice.assert_called_once()

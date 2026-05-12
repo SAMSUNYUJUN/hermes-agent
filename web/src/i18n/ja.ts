@@ -351,7 +351,6 @@ export const ja: Translations = {
       security: "セキュリティ",
       browser: "ブラウザ",
       voice: "音声",
-      tts: "音声合成",
       stt: "音声認識",
       logging: "ロギング",
       discord: "Discord",

@@ -309,38 +309,6 @@ def test_voice_record_start_reports_busy_when_stop_is_in_progress(monkeypatch):
     assert resp["result"]["status"] == "busy"
 
 
-def test_voice_toggle_tts_branch_also_carries_record_key(monkeypatch):
-    """Round-2 Copilot review regression on #19835.
-
-    The ``tts`` branch used to omit ``record_key`` from its response, so a
-    TUI client would parse ``r.record_key ?? 'ctrl+b'`` and reset a
-    custom binding to the default on every TTS toggle. Every branch of
-    ``voice.toggle`` now carries the configured key so frontend state
-    stays authoritative.
-    """
-    monkeypatch.setattr(
-        server,
-        "_load_cfg",
-        lambda: {"voice": {"record_key": "ctrl+space"}},
-    )
-    monkeypatch.setitem(
-        sys.modules,
-        "tools.voice_mode",
-        types.SimpleNamespace(
-            check_voice_requirements=lambda: {"available": True, "details": ""}
-        ),
-    )
-    monkeypatch.setenv("HERMES_VOICE", "1")
-    monkeypatch.delenv("HERMES_VOICE_TTS", raising=False)
-
-    tts_resp = server.dispatch(
-        {"id": "voice-tts", "method": "voice.toggle", "params": {"action": "tts"}}
-    )
-
-    assert tts_resp["result"]["record_key"] == "ctrl+space"
-    assert tts_resp["result"]["tts"] is True
-
-
 def test_load_enabled_toolsets_prefers_tui_env(monkeypatch):
     monkeypatch.setenv("HERMES_TUI_TOOLSETS", "web, terminal, ,memory")
 
@@ -3448,7 +3416,7 @@ def test_model_options_does_not_overwrite_curated_models(monkeypatch):
     each provider's curated ``models`` field with ``provider_model_ids()``
     (live /models catalog).  That pulled in hundreds of non-agentic models
     for providers like Nous whose /models endpoint returns image/video
-    generators, rerankers, embeddings, and TTS models alongside chat models.
+    generators, rerankers, and embeddings alongside chat models.
     """
     curated_providers = [
         {

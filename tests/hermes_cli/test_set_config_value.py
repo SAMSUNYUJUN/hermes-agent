@@ -44,7 +44,6 @@ class TestExplicitAllowlist:
         "HONCHO_API_KEY",
         "FIRECRAWL_API_KEY",
         "BROWSERBASE_API_KEY",
-        "FAL_KEY",
         "SUDO_PASSWORD",
         "GITHUB_TOKEN",
         "TELEGRAM_BOT_TOKEN",
@@ -69,7 +68,7 @@ class TestCatchAllPatterns:
 
     @pytest.mark.parametrize("key", [
         "DAYTONA_API_KEY",
-        "ELEVENLABS_API_KEY",
+        "SOME_SPEECH_SERVICE_API_KEY",
         "SOME_FUTURE_SERVICE_API_KEY",
         "MY_CUSTOM_TOKEN",
         "WHATSAPP_BOT_TOKEN",

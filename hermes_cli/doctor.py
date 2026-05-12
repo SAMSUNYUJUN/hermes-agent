@@ -351,8 +351,7 @@ def run_doctor(args):
     
     optional_packages = [
         ("croniter", "Croniter (cron expressions)"),
-        ("telegram", "python-telegram-bot"),
-        ("discord", "discord.py"),
+        ("lark_oapi", "lark-oapi (Feishu/Lark gateway)"),
     ]
     
     for module, name in required_packages:
@@ -364,10 +363,9 @@ def run_doctor(args):
             issues.append(f"Install {name}: {_python_install_cmd()} {module}")
     
     for module, name in optional_packages:
-        try:
-            __import__(module)
+        if importlib.util.find_spec(module) is not None:
             check_ok(name, "(optional)")
-        except ImportError:
+        else:
             check_warn(name, "(optional, not installed)")
     
     # =========================================================================

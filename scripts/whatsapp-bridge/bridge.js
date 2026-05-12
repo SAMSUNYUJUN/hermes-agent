@@ -582,7 +582,7 @@ app.post('/send-media', async (req, res) => {
         break;
       case 'audio': {
         // WhatsApp only renders a native voice bubble (ptt) when the file is ogg/opus.
-        // If the caller passes mp3, wav, m4a etc. (e.g. from Edge TTS / NeuTTS),
+        // If the caller passes mp3, wav, m4a etc.,
         // silently convert to ogg/opus via ffmpeg so ptt is always honoured.
         let audioBuffer = buffer;
         let audioExt = ext;

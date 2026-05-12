@@ -9,7 +9,7 @@ same key. The fix prefixes keys with platform value: 'telegram:123' vs
 import json
 import tempfile
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -48,12 +48,12 @@ class TestVoiceModePlatformIsolation:
         runner = _make_runner()
 
         # Enable voice mode for Telegram chat '123'
-        runner._voice_mode[runner._voice_key(Platform.TELEGRAM, "123")] = "all"
+        runner._voice_mode[runner._voice_key(Platform.TELEGRAM, "123")] = "voice_only"
         # Enable voice mode for Slack chat '123' to a different mode
         runner._voice_mode[runner._voice_key(Platform.SLACK, "123")] = "voice_only"
 
         # Verify they are independent
-        assert runner._voice_mode.get(runner._voice_key(Platform.TELEGRAM, "123")) == "all"
+        assert runner._voice_mode.get(runner._voice_key(Platform.TELEGRAM, "123")) == "voice_only"
         assert runner._voice_mode.get(runner._voice_key(Platform.SLACK, "123")) == "voice_only"
 
         # Disabling Telegram should not affect Slack
@@ -71,7 +71,7 @@ class TestLegacyKeyMigration:
 
         # Simulate legacy persisted data with unprefixed keys
         legacy_data = {
-            "123": "all",
+            "123": "voice_only",
             "456": "voice_only",
             # Also includes a properly prefixed key (from after the fix)
             "telegram:789": "off",
@@ -100,7 +100,7 @@ class TestLegacyKeyMigration:
         runner = _make_runner()
 
         persisted_data = {
-            "telegram:123": "all",
+            "telegram:123": "voice_only",
             "slack:456": "voice_only",
             "discord:789": "off",
         }
@@ -112,7 +112,7 @@ class TestLegacyKeyMigration:
             with patch.object(runner, "_VOICE_MODE_PATH", voice_path):
                 result = runner._load_voice_modes()
 
-        assert result.get("telegram:123") == "all"
+        assert result.get("telegram:123") == "voice_only"
         assert result.get("slack:456") == "voice_only"
         assert result.get("discord:789") == "off"
 
@@ -133,76 +133,9 @@ class TestLegacyKeyMigration:
             with patch.object(runner, "_VOICE_MODE_PATH", voice_path):
                 result = runner._load_voice_modes()
 
-        assert result.get("telegram:123") == "all"
+        assert result.get("telegram:123") == "voice_only"
         assert "telegram:456" not in result
         assert result.get("telegram:789") == "voice_only"
-
-
-class TestSyncVoiceModeStateToAdapter:
-    """Test _sync_voice_mode_state_to_adapter filters by platform."""
-
-    def test_sync_only_includes_platform_chats(self):
-        """Only chats matching the adapter's platform are synced."""
-        runner = _make_runner()
-
-        # Set up voice mode state with multiple platforms
-        runner._voice_mode = {
-            "telegram:123": "off",      # Should sync
-            "telegram:456": "all",       # Should NOT sync (mode is not "off")
-            "slack:123": "off",          # Should NOT sync (different platform)
-            "discord:789": "off",        # Should NOT sync (different platform)
-        }
-
-        # Create a mock Telegram adapter
-        mock_adapter = MagicMock()
-        mock_adapter.platform = Platform.TELEGRAM
-        mock_adapter._auto_tts_disabled_chats = set()
-
-        runner._sync_voice_mode_state_to_adapter(mock_adapter)
-
-        # Only telegram:123 should be in disabled_chats (mode="off" for telegram)
-        assert mock_adapter._auto_tts_disabled_chats == {"123"}
-
-    def test_sync_clears_existing_state(self):
-        """_sync_voice_mode_state_to_adapter clears existing disabled_chats first."""
-        runner = _make_runner()
-
-        runner._voice_mode = {
-            "telegram:123": "off",
-        }
-
-        mock_adapter = MagicMock()
-        mock_adapter.platform = Platform.TELEGRAM
-        mock_adapter._auto_tts_disabled_chats = {"old_chat_id", "another_old"}
-
-        runner._sync_voice_mode_state_to_adapter(mock_adapter)
-
-        # Old entries should be cleared
-        assert mock_adapter._auto_tts_disabled_chats == {"123"}
-
-    def test_sync_returns_early_without_platform(self):
-        """_sync_voice_mode_state_to_adapter returns early if adapter has no platform."""
-        runner = _make_runner()
-        runner._voice_mode = {"telegram:123": "off"}
-
-        mock_adapter = MagicMock()
-        mock_adapter.platform = None
-        mock_adapter._auto_tts_disabled_chats = {"old"}
-
-        runner._sync_voice_mode_state_to_adapter(mock_adapter)
-
-        # disabled_chats should not be modified
-        assert mock_adapter._auto_tts_disabled_chats == {"old"}
-
-    def test_sync_returns_early_without_auto_tts_disabled_chats(self):
-        """_sync_voice_mode_state_to_adapter returns early if adapter lacks _auto_tts_disabled_chats."""
-        runner = _make_runner()
-        runner._voice_mode = {"telegram:123": "off"}
-
-        mock_adapter = MagicMock(spec=[])  # No _auto_tts_disabled_chats attribute
-
-        # Should not raise
-        runner._sync_voice_mode_state_to_adapter(mock_adapter)
 
 
 # ---------------------------------------------------------------------------

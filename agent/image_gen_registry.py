@@ -3,8 +3,8 @@ Image Generation Provider Registry
 ==================================
 
 Central map of registered providers. Populated by plugins at import-time via
-``PluginContext.register_image_gen_provider()``; consumed by the
-``image_generate`` tool to dispatch each call to the active backend.
+``PluginContext.register_image_gen_provider()``; plugin callers can use it to
+dispatch image-generation requests to the active backend.
 
 Active selection
 ----------------

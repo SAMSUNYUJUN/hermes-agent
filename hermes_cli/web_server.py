@@ -265,11 +265,6 @@ _SCHEMA_OVERRIDES: Dict[str, Dict[str, Any]] = {
         "description": "Modal sandbox mode",
         "options": ["sandbox", "function"],
     },
-    "tts.provider": {
-        "type": "select",
-        "description": "Text-to-speech provider",
-        "options": ["edge", "elevenlabs", "openai", "neutts"],
-    },
     "stt.provider": {
         "type": "select",
         "description": "Speech-to-text provider",
@@ -356,7 +351,7 @@ _CATEGORY_MERGE: Dict[str, str] = {
 _CATEGORY_ORDER = [
     "general", "agent", "terminal", "display", "delegation",
     "memory", "compression", "security", "browser", "voice",
-    "tts", "stt", "logging", "discord", "auxiliary",
+    "stt", "logging", "discord", "auxiliary",
 ]
 
 

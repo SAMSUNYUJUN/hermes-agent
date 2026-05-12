@@ -325,9 +325,8 @@ gateway:
     save_failed:           "_(設定に保存できませんでした: {error})_"
 
   voice:
-    enabled_voice_only:    "音声モードを有効にしました。\n音声メッセージを送ると音声で返信します。\nすべてのメッセージへの音声返信は /voice tts を使ってください。"
+    enabled_voice_only:    "音声モードを有効にしました。"
     disabled_text:         "音声モードを無効にしました。テキストのみで返信します。"
-    tts_enabled:           "自動 TTS を有効にしました。\nすべての返信に音声メッセージが含まれます。"
     status_mode:           "音声モード: {label}"
     status_channel:        "音声チャンネル: #{channel}"
     status_participants:   "参加者: {count}"
@@ -337,7 +336,6 @@ gateway:
     disabled_short:        "音声モードを無効にしました。"
     label_off:             "オフ (テキストのみ)"
     label_voice_only:      "オン (音声メッセージにのみ音声で返信)"
-    label_all:             "TTS (すべてのメッセージに音声で返信)"
 
   yolo:
     disabled:                   "⚠️ このセッションの YOLO モードは **OFF** — 危険なコマンドには承認が必要です。"

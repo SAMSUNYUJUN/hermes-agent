@@ -351,7 +351,6 @@ export const hu: Translations = {
       security: "Biztonság",
       browser: "Böngésző",
       voice: "Hang",
-      tts: "Szövegfelolvasás",
       stt: "Beszédfelismerés",
       logging: "Naplózás",
       discord: "Discord",

@@ -1,9 +1,8 @@
-"""Process-wide voice recording + TTS API for the TUI gateway.
+"""Process-wide voice recording API for the TUI gateway.
 
-Wraps ``tools.voice_mode`` (recording/transcription) and ``tools.tts_tool``
-(text-to-speech) behind idempotent, stateful entry points that the gateway's
-``voice.record``, ``voice.toggle``, and ``voice.tts`` JSON-RPC handlers can
-call from a dedicated thread. The gateway imports this module lazily so that
+Wraps ``tools.voice_mode`` (recording/transcription) behind idempotent,
+stateful entry points that the gateway's voice JSON-RPC handlers can call
+from a dedicated thread. The gateway imports this module lazily so that
 missing optional audio deps (sounddevice, faster-whisper, numpy) surface as
 an ``ImportError`` at call time, not at startup.
 
@@ -232,7 +231,7 @@ def _debug(msg: str) -> None:
     user's real terminal without shipping a separate debug RPC.
 
     Any OSError / BrokenPipeError is swallowed because this fires from
-    background threads (silence callback, TTS daemon, beep) where a
+    background threads (silence callback, playback daemon, beep) where a
     broken stderr pipe must not kill the whole gateway — the main
     command pipe (stdin+stdout) is what actually matters.
     """
@@ -285,15 +284,9 @@ _continuous_stopping = False
 _continuous_auto_restart: bool = True
 _continuous_recorder: Any = None
 
-# ── TTS-vs-STT feedback guard ────────────────────────────────────────
-# When TTS plays the agent reply over the speakers, the live microphone
-# picks it up and transcribes the agent's own voice as user input — an
-# infinite loop the agent happily joins ("Ha, looks like we're in a loop").
-# This Event mirrors cli.py:_voice_tts_done: cleared while speak_text is
-# playing, set while silent. _continuous_on_silence waits on it before
-# re-arming the recorder, and speak_text itself cancels any live capture
-# before starting playback so the tail of the previous utterance doesn't
-# leak into the mic.
+# ── Legacy speech-output guard ────────────────────────────────────────
+# Speech output has been removed, but continuous recording still checks this
+# event before re-arming the microphone. Keep it permanently set.
 _tts_playing = threading.Event()
 _tts_playing.set()  # initially "not playing"
 _continuous_on_transcript: Optional[Callable[[str], None]] = None
@@ -682,13 +675,13 @@ def _continuous_on_silence() -> None:
                 pass
         return
 
-    # CLI parity (cli.py:10619-10621): wait for any in-flight TTS to
+    # CLI parity: wait for any in-flight speech output to
     # finish before re-arming the mic, then leave a small gap to avoid
     # catching the tail of the speaker output.  Without this the voice
     # loop becomes a feedback loop — the agent's spoken reply lands
     # back in the mic and gets re-submitted.
     if not _tts_playing.is_set():
-        _debug("_continuous_on_silence: waiting for TTS to finish")
+        _debug("_continuous_on_silence: waiting for speech output to finish")
         _tts_playing.wait(timeout=60)
         import time as _time
         _time.sleep(0.3)
@@ -696,7 +689,7 @@ def _continuous_on_silence() -> None:
         # User may have stopped the loop during the wait.
         with _continuous_lock:
             if not _continuous_active:
-                _debug("_continuous_on_silence: stopped while waiting for TTS")
+                _debug("_continuous_on_silence: stopped while waiting for speech output")
                 return
 
     if _continuous_auto_restart:
@@ -734,113 +727,11 @@ def _continuous_on_silence() -> None:
                 pass
 
 
-# ── TTS API ──────────────────────────────────────────────────────────
+# ── Speech Output API ─────────────────────────────────────────────────
 
 
 def speak_text(text: str) -> None:
-    """Synthesize ``text`` with the configured TTS provider and play it.
-
-    Mirrors cli.py:_voice_speak_response exactly — same markdown strip
-    pipeline, same 4000-char cap, same explicit mp3 output path, same
-    MP3-over-OGG playback choice (afplay misbehaves on OGG), same cleanup
-    of both extensions. Keeping these in sync means a voice-mode TTS
-    session in the TUI sounds identical to one in the classic CLI.
-
-    While playback is in flight the module-level _tts_playing Event is
-    cleared so the continuous-recording loop knows to wait before
-    re-arming the mic (otherwise the agent's spoken reply feedback-loops
-    through the microphone and the agent ends up replying to itself).
-    """
-    if not text or not text.strip():
-        return
-
-    import re
-    import tempfile
-    import time
-
-    # Cancel any live capture before we open the speakers — otherwise the
-    # last ~200ms of the user's turn tail + the first syllables of our TTS
-    # both end up in the next recording window.  The continuous loop will
-    # re-arm itself after _tts_playing flips back (see _continuous_on_silence).
-    paused_recording = False
-    with _continuous_lock:
-        if (
-            _continuous_active
-            and _continuous_recorder is not None
-            and getattr(_continuous_recorder, "is_recording", False)
-        ):
-            try:
-                _continuous_recorder.cancel()
-                paused_recording = True
-            except Exception as e:
-                logger.warning("failed to pause recorder for TTS: %s", e)
-
-    _tts_playing.clear()
-    _debug(f"speak_text: TTS begin (paused_recording={paused_recording})")
-
-    try:
-        from tools.tts_tool import text_to_speech_tool
-
-        tts_text = text[:4000] if len(text) > 4000 else text
-        tts_text = re.sub(r'```[\s\S]*?```', ' ', tts_text)             # fenced code blocks
-        tts_text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', tts_text)    # [text](url) → text
-        tts_text = re.sub(r'https?://\S+', '', tts_text)                # bare URLs
-        tts_text = re.sub(r'\*\*(.+?)\*\*', r'\1', tts_text)            # bold
-        tts_text = re.sub(r'\*(.+?)\*', r'\1', tts_text)                # italic
-        tts_text = re.sub(r'`(.+?)`', r'\1', tts_text)                  # inline code
-        tts_text = re.sub(r'^#+\s*', '', tts_text, flags=re.MULTILINE)  # headers
-        tts_text = re.sub(r'^\s*[-*]\s+', '', tts_text, flags=re.MULTILINE)  # list bullets
-        tts_text = re.sub(r'---+', '', tts_text)                        # horizontal rules
-        tts_text = re.sub(r'\n{3,}', '\n\n', tts_text)                  # excess newlines
-        tts_text = tts_text.strip()
-        if not tts_text:
-            return
-
-        # MP3 output path, pre-chosen so we can play the MP3 directly even
-        # when text_to_speech_tool auto-converts to OGG for messaging
-        # platforms.  afplay's OGG support is flaky, MP3 always works.
-        os.makedirs(os.path.join(tempfile.gettempdir(), "hermes_voice"), exist_ok=True)
-        mp3_path = os.path.join(
-            tempfile.gettempdir(),
-            "hermes_voice",
-            f"tts_{time.strftime('%Y%m%d_%H%M%S')}.mp3",
-        )
-
-        _debug(f"speak_text: synthesizing {len(tts_text)} chars -> {mp3_path}")
-        text_to_speech_tool(text=tts_text, output_path=mp3_path)
-
-        if os.path.isfile(mp3_path) and os.path.getsize(mp3_path) > 0:
-            _debug(f"speak_text: playing {mp3_path} ({os.path.getsize(mp3_path)} bytes)")
-            play_audio_file(mp3_path)
-            try:
-                os.unlink(mp3_path)
-                ogg_path = mp3_path.rsplit(".", 1)[0] + ".ogg"
-                if os.path.isfile(ogg_path):
-                    os.unlink(ogg_path)
-            except OSError:
-                pass
-        else:
-            _debug(f"speak_text: TTS tool produced no audio at {mp3_path}")
-    except Exception as e:
-        logger.warning("Voice TTS playback failed: %s", e)
-        _debug(f"speak_text raised {type(e).__name__}: {e}")
-    finally:
-        _tts_playing.set()
-        _debug("speak_text: TTS done")
-
-        # Re-arm the mic so the user can answer without pressing Ctrl+B.
-        # Small delay lets the OS flush speaker output and afplay fully
-        # release the audio device before sounddevice re-opens the input.
-        if paused_recording:
-            time.sleep(0.3)
-            with _continuous_lock:
-                if _continuous_active and _continuous_recorder is not None:
-                    try:
-                        _continuous_recorder.start(
-                            on_silence_stop=_continuous_on_silence
-                        )
-                        _debug("speak_text: recording resumed after TTS")
-                    except Exception as e:
-                        logger.warning(
-                            "failed to resume recorder after TTS: %s", e
-                        )
+    """Speech output is no longer available."""
+    _tts_playing.set()
+    if text and text.strip():
+        _debug("speak_text skipped: speech output has been removed")

@@ -102,19 +102,6 @@ def check_packages():
     except ImportError:
         warn("faster-whisper (local STT)", "not installed — local STT unavailable")
 
-    # Optional: TTS providers
-    try:
-        import edge_tts
-        check("edge-tts", True)
-    except ImportError:
-        warn("edge-tts", "not installed — edge TTS unavailable")
-
-    try:
-        import elevenlabs
-        check("elevenlabs SDK", True)
-    except ImportError:
-        warn("elevenlabs SDK", "not installed — premium TTS unavailable")
-
     return ok
 
 
@@ -171,7 +158,7 @@ def check_system_tools():
 
 
 def check_env_vars():
-    """Check environment variables. Returns (ok, token, groq_key, eleven_key)."""
+    """Check environment variables. Returns (ok, token, groq_key)."""
     section("Environment Variables")
 
     # Load .env
@@ -219,22 +206,16 @@ def check_env_vars():
         warn("DISCORD_ALLOWED_USERS", "not set — all users can use voice")
 
     groq_key = os.getenv("GROQ_API_KEY", "")
-    eleven_key = os.getenv("ELEVENLABS_API_KEY", "")
 
     if groq_key:
         check("GROQ_API_KEY (STT)", True, mask(groq_key))
     else:
         warn("GROQ_API_KEY", "not set — Groq STT unavailable")
 
-    if eleven_key:
-        check("ELEVENLABS_API_KEY (TTS)", True, mask(eleven_key))
-    else:
-        warn("ELEVENLABS_API_KEY", "not set — ElevenLabs TTS unavailable")
-
-    return ok, token, groq_key, eleven_key
+    return ok, token, groq_key
 
 
-def check_config(groq_key, eleven_key):
+def check_config(groq_key):
     """Check hermes config.yaml."""
     section("Configuration")
 
@@ -246,18 +227,12 @@ def check_config(groq_key, eleven_key):
                 cfg = yaml.safe_load(f) or {}
 
             stt_provider = cfg.get("stt", {}).get("provider", "local")
-            tts_provider = cfg.get("tts", {}).get("provider", "edge")
             check("STT provider", True, stt_provider)
-            check("TTS provider", True, tts_provider)
 
             if stt_provider == "groq" and not groq_key:
                 warn("STT config says groq but GROQ_API_KEY is missing")
             if stt_provider == "mistral" and not os.getenv("MISTRAL_API_KEY"):
                 warn("STT config says mistral but MISTRAL_API_KEY is missing")
-            if tts_provider == "elevenlabs" and not eleven_key:
-                warn("TTS config says elevenlabs but ELEVENLABS_API_KEY is missing")
-            if tts_provider == "mistral" and not os.getenv("MISTRAL_API_KEY"):
-                warn("TTS config says mistral but MISTRAL_API_KEY is missing")
         except Exception as e:
             warn("config.yaml", f"parse error: {e}")
     else:
@@ -270,8 +245,8 @@ def check_config(groq_key, eleven_key):
             import json
             modes = json.loads(voice_mode_path.read_text(encoding="utf-8"))
             off_count = sum(1 for v in modes.values() if v == "off")
-            all_count = sum(1 for v in modes.values() if v == "all")
-            check("Voice mode state", True, f"{all_count} on, {off_count} off, {len(modes)} total")
+            enabled_count = sum(1 for v in modes.values() if v in {"voice_only", "all"})
+            check("Voice mode state", True, f"{enabled_count} on, {off_count} off, {len(modes)} total")
         except Exception:
             warn("Voice mode state", "parse error")
     else:
@@ -377,9 +352,9 @@ def main():
 
     all_ok &= check_packages()
     all_ok &= check_system_tools()
-    env_ok, token, groq_key, eleven_key = check_env_vars()
+    env_ok, token, groq_key = check_env_vars()
     all_ok &= env_ok
-    check_config(groq_key, eleven_key)
+    check_config(groq_key)
     all_ok &= check_bot_permissions(token)
 
     # Summary

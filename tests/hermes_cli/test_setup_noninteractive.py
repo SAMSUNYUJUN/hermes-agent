@@ -144,8 +144,8 @@ class TestNonInteractiveSetup:
         out = capsys.readouterr().out
         assert "hermes config set model.provider custom" in out
 
-    def test_main_accepts_tts_setup_section(self, monkeypatch):
-        """`hermes setup tts` should parse and dispatch like other setup sections."""
+    def test_main_accepts_tools_setup_section(self, monkeypatch):
+        """`hermes setup tools` should parse and dispatch like other setup sections."""
         from hermes_cli import main as main_mod
 
         received = {}
@@ -154,8 +154,8 @@ class TestNonInteractiveSetup:
             received["section"] = args.section
 
         monkeypatch.setattr(main_mod, "cmd_setup", fake_cmd_setup)
-        monkeypatch.setattr("sys.argv", ["hermes", "setup", "tts"])
+        monkeypatch.setattr("sys.argv", ["hermes", "setup", "tools"])
 
         main_mod.main()
 
-        assert received["section"] == "tts"
+        assert received["section"] == "tools"

@@ -140,10 +140,8 @@ def show_status(args):
         "Tavily": "TAVILY_API_KEY",
         "Browser Use": "BROWSER_USE_API_KEY",  # Optional — local browser works without this
         "Browserbase": "BROWSERBASE_API_KEY",  # Optional — direct credentials only
-        "FAL": "FAL_KEY",
         "Tinker": "TINKER_API_KEY",
         "WandB": "WANDB_API_KEY",
-        "ElevenLabs": "ELEVENLABS_API_KEY",
         "GitHub": "GITHUB_TOKEN",
     }
 
@@ -290,7 +288,7 @@ def show_status(args):
         print()
         print(color("◆ Nous Tool Gateway", Colors.CYAN, Colors.BOLD))
         print("  Your free-tier Nous account does not include Tool Gateway access.")
-        print("  Upgrade your subscription to unlock managed web, image, TTS, and browser tools.")
+        print("  Upgrade your subscription to unlock managed web and browser tools.")
         try:
             portal_url = nous_status.get("portal_base_url", "").rstrip("/")
             if portal_url:
@@ -389,21 +387,7 @@ def show_status(args):
     print(color("◆ Messaging Platforms", Colors.CYAN, Colors.BOLD))
 
     platforms = {
-        "Telegram": ("TELEGRAM_BOT_TOKEN", "TELEGRAM_HOME_CHANNEL"),
-        "Discord": ("DISCORD_BOT_TOKEN", "DISCORD_HOME_CHANNEL"),
-        "WhatsApp": ("WHATSAPP_ENABLED", None),
-        "Signal": ("SIGNAL_HTTP_URL", "SIGNAL_HOME_CHANNEL"),
-        "Slack": ("SLACK_BOT_TOKEN", None),
-        "Email": ("EMAIL_ADDRESS", "EMAIL_HOME_ADDRESS"),
-        "SMS": ("TWILIO_ACCOUNT_SID", "SMS_HOME_CHANNEL"),
-        "DingTalk": ("DINGTALK_CLIENT_ID", None),
         "Feishu": ("FEISHU_APP_ID", "FEISHU_HOME_CHANNEL"),
-        "WeCom": ("WECOM_BOT_ID", "WECOM_HOME_CHANNEL"),
-        "WeCom Callback": ("WECOM_CALLBACK_CORP_ID", None),
-        "Weixin": ("WEIXIN_ACCOUNT_ID", "WEIXIN_HOME_CHANNEL"),
-        "BlueBubbles": ("BLUEBUBBLES_SERVER_URL", "BLUEBUBBLES_HOME_CHANNEL"),
-        "QQBot": ("QQ_APP_ID", "QQ_HOME_CHANNEL"),
-        "Yuanbao": ("YUANBAO_APP_ID", "YUANBAO_HOME_CHANNEL"),
     }
 
     for name, (token_var, home_var) in platforms.items():

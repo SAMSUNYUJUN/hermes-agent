@@ -647,7 +647,7 @@ class TestPrintMigrationReport:
                 {"kind": "soul", "status": "migrated", "destination": "/home/user/.hermes/SOUL.md"},
                 {"kind": "memory", "status": "migrated", "destination": "/home/user/.hermes/memories/MEMORY.md"},
                 {"kind": "skills", "status": "conflict", "reason": "already exists"},
-                {"kind": "tts-assets", "status": "skipped", "reason": "not found"},
+                {"kind": "archive", "status": "skipped", "reason": "not found"},
             ],
             "preset": "full",
         }

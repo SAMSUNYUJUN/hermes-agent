@@ -325,9 +325,8 @@ gateway:
     save_failed:           "_(kon nie in konfigurasie stoor nie: {error})_"
 
   voice:
-    enabled_voice_only:    "Stemmodus geaktiveer.\nEk sal met stem antwoord wanneer jy stemboodskappe stuur.\nGebruik /voice tts om stemantwoorde vir alle boodskappe te kry."
+    enabled_voice_only:    "Stemmodus geaktiveer."
     disabled_text:         "Stemmodus gedeaktiveer. Slegs teks-antwoorde."
-    tts_enabled:           "Outo-TTS geaktiveer.\nAlle antwoorde sal 'n stemboodskap insluit."
     status_mode:           "Stemmodus: {label}"
     status_channel:        "Stemkanaal: #{channel}"
     status_participants:   "Deelnemers: {count}"
@@ -337,7 +336,6 @@ gateway:
     disabled_short:        "Stemmodus gedeaktiveer."
     label_off:             "Af (slegs teks)"
     label_voice_only:      "Aan (stemantwoord op stemboodskappe)"
-    label_all:             "TTS (stemantwoord op alle boodskappe)"
 
   yolo:
     disabled:                   "⚠️ YOLO-modus **AF** vir hierdie sessie — gevaarlike opdragte sal goedkeuring vereis."

@@ -351,7 +351,6 @@ export const ru: Translations = {
       security: "Безопасность",
       browser: "Браузер",
       voice: "Голос",
-      tts: "Синтез речи",
       stt: "Распознавание речи",
       logging: "Журналирование",
       discord: "Discord",

@@ -371,7 +371,6 @@ export interface Translations {
       security: string;
       browser: string;
       voice: string;
-      tts: string;
       stt: string;
       logging: string;
       discord: string;

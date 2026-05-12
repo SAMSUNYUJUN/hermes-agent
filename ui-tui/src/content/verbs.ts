@@ -5,7 +5,6 @@ export const TOOL_VERBS: Record<string, string> = {
   delegate_task: 'delegating',
   delete_file: 'deleting',
   execute_code: 'executing',
-  image_generate: 'generating',
   list_files: 'listing',
   memory: 'remembering',
   patch: 'patching',

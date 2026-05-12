@@ -669,7 +669,7 @@ install_system_packages() {
         need_ripgrep=true
     fi
 
-    log_info "Checking ffmpeg (TTS voice messages)..."
+    log_info "Checking ffmpeg (audio processing)..."
     if command -v ffmpeg &> /dev/null; then
         local ffmpeg_ver=$(ffmpeg -version 2>/dev/null | head -1 | awk '{print $3}')
         log_success "ffmpeg $ffmpeg_ver found"
@@ -715,7 +715,7 @@ install_system_packages() {
         pkgs+=("ripgrep")
     fi
     if [ "$need_ffmpeg" = true ]; then
-        desc_parts+=("ffmpeg for TTS voice messages")
+        desc_parts+=("ffmpeg for audio processing")
         pkgs+=("ffmpeg")
     fi
     local description
@@ -821,7 +821,7 @@ install_system_packages() {
         show_manual_install_hint "ripgrep"
     fi
     if [ "$HAS_FFMPEG" = false ] && [ "$need_ffmpeg" = true ]; then
-        log_warn "ffmpeg not installed (TTS voice messages will be limited)"
+        log_warn "ffmpeg not installed (audio processing will be limited)"
         show_manual_install_hint "ffmpeg"
     fi
 }

@@ -12,13 +12,6 @@ from hermes_cli import setup as setup_mod
 from hermes_cli.setup import setup_model_provider
 
 
-def _maybe_keep_current_tts(question, choices):
-    if question != "Select TTS provider:":
-        return None
-    assert choices[-1].startswith("Keep current (")
-    return len(choices) - 1
-
-
 def _clear_provider_env(monkeypatch):
     for key in (
         "NOUS_API_KEY",
@@ -41,12 +34,9 @@ def _clear_vercel_env(monkeypatch):
         monkeypatch.delenv(key, raising=False)
 
 
-def _stub_tts(monkeypatch):
-    """Stub out TTS prompts so setup_model_provider doesn't block."""
-    monkeypatch.setattr("hermes_cli.setup.prompt_choice", lambda q, c, d=0: (
-        _maybe_keep_current_tts(q, c) if _maybe_keep_current_tts(q, c) is not None
-        else d
-    ))
+def _stub_optional_prompts(monkeypatch):
+    """Stub out optional prompts so setup_model_provider doesn't block."""
+    monkeypatch.setattr("hermes_cli.setup.prompt_choice", lambda q, c, d=0: d)
     monkeypatch.setattr("hermes_cli.setup.prompt_yes_no", lambda *a, **kw: False)
 
 
@@ -69,7 +59,7 @@ def test_setup_delegates_to_select_provider_and_model(tmp_path, monkeypatch):
     """setup_model_provider calls select_provider_and_model and syncs config."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
 
     config = load_config()
 
@@ -93,7 +83,7 @@ def test_setup_syncs_openrouter_from_disk(tmp_path, monkeypatch):
     the wizard's config dict picks it up."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
 
     config = load_config()
     assert isinstance(config.get("model"), str)  # fresh install
@@ -115,7 +105,7 @@ def test_setup_syncs_nous_from_disk(tmp_path, monkeypatch):
     """Nous OAuth writes config to disk; wizard config dict must pick it up."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
 
     config = load_config()
 
@@ -137,7 +127,7 @@ def test_setup_custom_providers_synced(tmp_path, monkeypatch):
     """custom_providers written by select_provider_and_model must survive."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
 
     config = load_config()
 
@@ -241,7 +231,7 @@ def test_setup_syncs_custom_provider_removal_from_disk(tmp_path, monkeypatch):
     """Removing the last custom provider in model setup should persist."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
 
     config = load_config()
     config["custom_providers"] = [{"name": "Local", "base_url": "http://localhost:8080/v1"}]
@@ -266,7 +256,7 @@ def test_setup_cancel_preserves_existing_config(tmp_path, monkeypatch):
     """When the user cancels provider selection, existing config is preserved."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
 
     # Pre-set a provider
     _write_model_config(tmp_path, "openrouter", model_name="gpt-4o")
@@ -292,7 +282,7 @@ def test_setup_exception_in_select_gracefully_handled(tmp_path, monkeypatch):
     """If select_provider_and_model raises, setup continues with existing config."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
 
     config = load_config()
 
@@ -309,7 +299,7 @@ def test_setup_keyboard_interrupt_gracefully_handled(tmp_path, monkeypatch):
     """KeyboardInterrupt during provider selection is handled."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
 
     config = load_config()
 
@@ -396,7 +386,7 @@ def test_codex_setup_uses_runtime_access_token_for_live_model_list(tmp_path, mon
     monkeypatch.setenv("OPENROUTER_API_KEY", "or-test-key")
 
     config = load_config()
-    _stub_tts(monkeypatch)
+    _stub_optional_prompts(monkeypatch)
 
     def fake_select():
         _write_model_config(tmp_path, "openai-codex", "https://api.openai.com/v1", "gpt-4o")

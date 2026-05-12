@@ -138,8 +138,6 @@ TIPS = [
     "read_file auto-deduplicates — re-reading an unchanged file returns a lightweight stub.",
     "browser_vision takes a screenshot and analyzes it with AI — works for CAPTCHAs and visual content.",
     "browser_console can evaluate JavaScript expressions in the page context.",
-    "image_generate creates images with FLUX 2 Pro and automatic 2x upscaling.",
-    "text_to_speech converts text to audio — plays as voice bubbles on Telegram.",
     "send_message can reach any connected messaging platform from within a session.",
     "The todo tool helps the agent track complex multi-step tasks during a session.",
     "session_search performs full-text search across ALL past conversations.",
@@ -186,9 +184,7 @@ TIPS = [
 
     # --- Voice ---
     "Voice mode works with zero API keys if faster-whisper is installed (free local speech-to-text).",
-    "Five TTS providers available: Edge TTS (free), ElevenLabs, OpenAI, NeuTTS (free local), MiniMax.",
     "/voice on enables voice mode in the CLI. Ctrl+B toggles push-to-talk recording.",
-    "Streaming TTS plays sentences as they generate — you don't wait for the full response.",
     "Voice messages on Telegram, Discord, WhatsApp, and Slack are auto-transcribed.",
 
     # --- Gateway & Messaging ---
@@ -368,7 +364,7 @@ TIPS = [
     # --- Credential Pools & Routing ---
     'hermes auth reset <provider> clears all cooldowns and exhaustion flags on a credential pool.',
     'credential_pool_strategies.<provider>: round_robin cycles keys evenly instead of the fill_first default.',
-    'use_gateway: true per-tool routes web, image, tts, or browser through your Nous subscription — no extra keys.',
+    'use_gateway: true per-tool routes web or browser through your Nous subscription — no extra keys.',
     'provider_routing.data_collection: deny excludes data-storing providers on OpenRouter.',
     'provider_routing.require_parameters: true only routes to providers that support every param in your request.',
 
@@ -392,10 +388,6 @@ TIPS = [
     'auxiliary.goal_judge.model routes the /goal judge to a cheap fast model to keep loop cost near zero.',
     'Checkpoints skip directories with more than 50,000 files to avoid slow git operations on massive monorepos.',
 
-    # --- TTS ---
-    'tts.provider: piper runs 44-language local TTS on CPU — voices auto-download to ~/.hermes/cache/piper-voices/.',
-    'tts.providers.<name>.type: command wires any CLI TTS engine with {input_path} and {output_path} placeholders.',
-
     # --- API Server & Proxy ---
     'API_SERVER_ENABLED=true runs an OpenAI-compatible endpoint alongside the gateway for Open WebUI and LibreChat.',
     'GATEWAY_PROXY_URL runs a split setup: platform I/O locally, agent work delegated to a remote API server.',
@@ -418,7 +410,6 @@ TIPS = [
     '/commands paginates the full slash-command + installed-skill list — useful on platforms without tab completion.',
     '/toolsets lists every available toolset so you know what -t/--toolsets accepts.',
     '/gquota shows Google Gemini Code Assist quota usage with progress bars when that provider is active.',
-    '/voice tts toggles TTS-only mode — agent replies out loud but you still type your prompts.',
     '/reload-skills re-scans ~/.hermes/skills/ so drop-in skills appear without restarting the session.',
     '/indicator kaomoji|emoji|unicode|ascii picks the TUI busy-indicator style shown during agent runs.',
     '/debug uploads a support bundle (system info + logs) and returns shareable links — works in chat too.',
@@ -454,9 +445,7 @@ TIPS = [
     'HERMES_RESTART_DRAIN_TIMEOUT (default 900s) caps how long /restart waits for in-flight runs before forcing.',
     'HERMES_CHECKPOINT_TIMEOUT (default 30s) caps filesystem checkpoint creation — raise it on huge monorepos.',
 
-    # --- Auxiliary Tasks & Image Generation ---
-    'image_gen.model in config.yaml picks the FAL model: flux-2/klein, gpt-image-2, nano-banana-pro, and more.',
-    'image_gen.provider routes image generation through a plugin (OpenAI Images, Codex, FAL) instead of the default.',
+    # --- Auxiliary Tasks ---
     'AUXILIARY_VISION_BASE_URL + AUXILIARY_VISION_API_KEY point vision analysis at any OpenAI-compatible endpoint.',
     'auxiliary.session_search.max_concurrency bounds how many matched sessions are summarized in parallel (default 3).',
     'auxiliary.session_search.extra_body forwards provider-specific OpenAI-compatible fields on summarization calls.',
@@ -483,5 +472,4 @@ def get_random_tip(exclude_recent: int = 0) -> str:
             deduplication across sessions.
     """
     return random.choice(TIPS)
-
 

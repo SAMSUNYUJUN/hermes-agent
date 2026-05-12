@@ -4538,7 +4538,7 @@ def _make_tc_delta(index=0, tc_id=None, name=None, arguments=None):
 
 
 class TestStreamingApiCall:
-    """Tests for _streaming_api_call — voice TTS streaming pipeline."""
+    """Tests for _streaming_api_call content assembly."""
 
     def test_content_assembly(self, agent):
         chunks = [
@@ -4803,7 +4803,7 @@ class TestAnthropicInterruptHandler:
 
 class TestStreamCallbackNonStreamingProvider:
     """When api_mode != chat_completions, stream_callback must still receive
-    the response content so TTS works (batch delivery)."""
+    the response content for batch delivery."""
 
     def test_callback_receives_chat_completions_response(self, agent):
         """For chat_completions-shaped responses, callback gets content."""
@@ -5004,12 +5004,12 @@ class TestReasoningReplayForStrictProviders:
 
 
 # ---------------------------------------------------------------------------
-# Bugfix: _vprint force=True on error messages during TTS
+# Bugfix: _vprint force=True on error messages during streaming
 # ---------------------------------------------------------------------------
 
 
 class TestVprintForceOnErrors:
-    """Error/warning messages must be visible during streaming TTS."""
+    """Error/warning messages must be visible during streaming."""
 
     def test_forced_message_shown_during_tts(self, agent):
         agent._stream_callback = lambda x: None

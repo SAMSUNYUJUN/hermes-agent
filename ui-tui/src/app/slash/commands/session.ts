@@ -220,13 +220,13 @@ export const sessionCommands: SlashCommand[] = [
   },
 
   {
-    help: 'voice mode: [on|off|tts|status]',
+    help: 'voice mode: [on|off|status]',
     name: 'voice',
     run: (arg, ctx) => {
       const normalized = (arg ?? '').trim().toLowerCase()
 
       const action =
-        normalized === 'on' || normalized === 'off' || normalized === 'tts' || normalized === 'status'
+        normalized === 'on' || normalized === 'off' || normalized === 'status'
           ? normalized
           : 'status'
 
@@ -258,15 +258,12 @@ export const sessionCommands: SlashCommand[] = [
 
           const recordKeyLabel = formatVoiceRecordKey(parsed ?? parseVoiceRecordKey('ctrl+b'))
 
-          // Match CLI's _show_voice_status / _enable_voice_mode /
-          // _toggle_voice_tts output shape so users don't have to learn
-          // two vocabularies.
+          // Match CLI's _show_voice_status / _enable_voice_mode output shape
+          // so users don't have to learn two vocabularies.
           if (action === 'status') {
             const mode = r.enabled ? 'ON' : 'OFF'
-            const tts = r.tts ? 'ON' : 'OFF'
             ctx.transcript.sys('Voice Mode Status')
             ctx.transcript.sys(`  Mode:       ${mode}`)
-            ctx.transcript.sys(`  TTS:        ${tts}`)
             ctx.transcript.sys(`  Record key: ${recordKeyLabel}`)
 
             // CLI's "Requirements:" block — surfaces STT/audio setup issues
@@ -286,18 +283,10 @@ export const sessionCommands: SlashCommand[] = [
             return
           }
 
-          if (action === 'tts') {
-            ctx.transcript.sys(`Voice TTS ${r.tts ? 'enabled' : 'disabled'}.`)
-
-            return
-          }
-
           // on/off — mirror cli.py:_enable_voice_mode's 3-line output
           if (r.enabled) {
-            const tts = r.tts ? ' (TTS enabled)' : ''
-            ctx.transcript.sys(`Voice mode enabled${tts}`)
+            ctx.transcript.sys('Voice mode enabled')
             ctx.transcript.sys(`  ${recordKeyLabel} to start/stop recording`)
-            ctx.transcript.sys('  /voice tts  to toggle speech output')
             ctx.transcript.sys('  /voice off  to disable voice mode')
           } else {
             ctx.transcript.sys('Voice mode disabled.')

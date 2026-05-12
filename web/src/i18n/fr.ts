@@ -351,7 +351,6 @@ export const fr: Translations = {
       security: "Sécurité",
       browser: "Navigateur",
       voice: "Voix",
-      tts: "Synthèse vocale",
       stt: "Reconnaissance vocale",
       logging: "Journalisation",
       discord: "Discord",

@@ -281,9 +281,7 @@ class TestStopWithoutStart:
 class TestSpeakTextGuards:
     @pytest.mark.parametrize("text", ["", "   ", "\n\t  "])
     def test_empty_text_is_noop(self, text):
-        """Empty / whitespace-only text must return without importing tts_tool
-        (the gateway spawns a thread per call, so a no-op on empty input
-        keeps the thread pool from churning on trivial inputs)."""
+        """Empty / whitespace-only text must return as a cheap no-op."""
         from hermes_cli.voice import speak_text
 
         # Should simply return None without raising.

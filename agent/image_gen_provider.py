@@ -3,9 +3,8 @@ Image Generation Provider ABC
 =============================
 
 Defines the pluggable-backend interface for image generation. Providers register
-instances via ``PluginContext.register_image_gen_provider()``; the active one
-(selected via ``image_gen.provider`` in ``config.yaml``) services every
-``image_generate`` tool call.
+instances via ``PluginContext.register_image_gen_provider()``; plugin callers
+can select an active backend by name when they need image generation.
 
 Providers live in ``<repo>/plugins/image_gen/<name>/`` (built-in, auto-loaded
 as ``kind: backend``) or ``~/.hermes/plugins/image_gen/<name>/`` (user, opt-in
@@ -14,7 +13,7 @@ via ``plugins.enabled``).
 Response shape
 --------------
 All providers return a dict that :func:`success_response` / :func:`error_response`
-produce. The tool wrapper JSON-serializes it. Keys:
+produce. Keys:
 
     success        bool
     image          str | None       URL or absolute file path

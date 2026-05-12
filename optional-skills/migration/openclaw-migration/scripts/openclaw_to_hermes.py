@@ -38,7 +38,6 @@ SUPPORTED_SECRET_TARGETS={
     "OPENROUTER_API_KEY",
     "OPENAI_API_KEY",
     "ANTHROPIC_API_KEY",
-    "ELEVENLABS_API_KEY",
     "VOICE_TOOLS_OPENAI_KEY",
 }
 WORKSPACE_INSTRUCTIONS_FILENAME = "AGENTS" + ".md"
@@ -75,10 +74,6 @@ MIGRATION_OPTION_METADATA: Dict[str, Dict[str, str]] = {
         "label": "User skills",
         "description": "Copy OpenClaw skills into ~/.hermes/skills/openclaw-imports/.",
     },
-    "tts-assets": {
-        "label": "TTS assets",
-        "description": "Copy compatible workspace TTS assets into ~/.hermes/tts/.",
-    },
     "discord-settings": {
         "label": "Discord settings",
         "description": "Import Discord bot token and allowlist into Hermes .env.",
@@ -102,10 +97,6 @@ MIGRATION_OPTION_METADATA: Dict[str, Dict[str, str]] = {
     "model-config": {
         "label": "Default model",
         "description": "Import the default model setting into Hermes config.yaml.",
-    },
-    "tts-config": {
-        "label": "TTS configuration",
-        "description": "Import TTS provider and voice settings into Hermes config.yaml.",
     },
     "shared-skills": {
         "label": "Shared skills",
@@ -193,13 +184,11 @@ MIGRATION_PRESETS: Dict[str, set[str]] = {
         "messaging-settings",
         "command-allowlist",
         "skills",
-        "tts-assets",
         "discord-settings",
         "slack-settings",
         "whatsapp-settings",
         "signal-settings",
         "model-config",
-        "tts-config",
         "shared-skills",
         "daily-memory",
         "archive",
@@ -787,7 +776,6 @@ class Migrator:
     # that call load_yaml_file(target_root / "config.yaml") + dump_yaml_file.
     _CONFIG_MUTATING_OPTIONS = frozenset({
         "model-config",
-        "tts-config",
         "mcp-servers",
         "plugins-config",
         "cron-jobs",
@@ -920,20 +908,10 @@ class Migrator:
         self.run_if_selected("signal-settings", lambda: self.migrate_signal_settings(config))
         self.run_if_selected("provider-keys", lambda: self.handle_provider_keys(config))
         self.run_if_selected("model-config", lambda: self.migrate_model_config(config))
-        self.run_if_selected("tts-config", lambda: self.migrate_tts_config(config))
         self.run_if_selected("command-allowlist", self.migrate_command_allowlist)
         self.run_if_selected("skills", self.migrate_skills)
         self.run_if_selected("shared-skills", self.migrate_shared_skills)
         self.run_if_selected("daily-memory", self.migrate_daily_memory)
-        self.run_if_selected(
-            "tts-assets",
-            lambda: self.copy_tree_non_destructive(
-                self.source_candidate("workspace/tts"),
-                self.target_root / "tts",
-                kind="tts-assets",
-                ignore_dir_names={".venv", "generated", "__pycache__"},
-            ),
-        )
         self.run_if_selected("archive", self.archive_docs)
 
         # ── v2 migration modules ──────────────────────────────
@@ -1565,20 +1543,6 @@ class Migrator:
                 if env_var:
                     secret_additions[env_var] = api_key
 
-        # Extract TTS API keys
-        tts = config.get("messages", {}).get("tts", {})
-        if isinstance(tts, dict):
-            elevenlabs = tts.get("elevenlabs", {})
-            if isinstance(elevenlabs, dict):
-                el_key = elevenlabs.get("apiKey")
-                if isinstance(el_key, str) and el_key.strip():
-                    secret_additions["ELEVENLABS_API_KEY"] = el_key.strip()
-            openai_tts = tts.get("openai", {})
-            if isinstance(openai_tts, dict):
-                oai_key = openai_tts.get("apiKey")
-                if isinstance(oai_key, str) and oai_key.strip():
-                    secret_additions["VOICE_TOOLS_OPENAI_KEY"] = oai_key.strip()
-
         # Also check the OpenClaw .env file — many users store keys there
         # instead of inline in openclaw.json
         openclaw_env = self.load_openclaw_env()
@@ -1586,7 +1550,6 @@ class Migrator:
             "OPENROUTER_API_KEY": "OPENROUTER_API_KEY",
             "OPENAI_API_KEY": "OPENAI_API_KEY",
             "ANTHROPIC_API_KEY": "ANTHROPIC_API_KEY",
-            "ELEVENLABS_API_KEY": "ELEVENLABS_API_KEY",
             "TELEGRAM_BOT_TOKEN": "TELEGRAM_BOT_TOKEN",
             "DEEPSEEK_API_KEY": "DEEPSEEK_API_KEY",
             "GEMINI_API_KEY": "GEMINI_API_KEY",
@@ -1718,106 +1681,6 @@ class Migrator:
             self.record("model-config", source_path, destination, "migrated", backup=str(backup_path) if backup_path else "", model=model_str)
         else:
             self.record("model-config", source_path, destination, "migrated", "Would set model", model=model_str)
-
-    def migrate_tts_config(self, config: Optional[Dict[str, Any]] = None) -> None:
-        config = config or self.load_openclaw_config()
-        destination = self.target_root / "config.yaml"
-        source_path = self.source_root / "openclaw.json"
-
-        tts = config.get("messages", {}).get("tts", {})
-        if not isinstance(tts, dict) or not tts:
-            self.record("tts-config", source_path, destination, "skipped", "No TTS configuration found in OpenClaw config")
-            return
-
-        if yaml is None:
-            self.record("tts-config", source_path, destination, "error", "PyYAML is not available")
-            return
-
-        tts_data: Dict[str, Any] = {}
-
-        provider = tts.get("provider")
-        if isinstance(provider, str) and provider in ("elevenlabs", "openai", "edge", "microsoft"):
-            # OpenClaw renamed "edge" to "microsoft"; Hermes still uses "edge"
-            tts_data["provider"] = "edge" if provider == "microsoft" else provider
-
-        # TTS provider settings live under messages.tts.providers.{provider}
-        # in OpenClaw (not messages.tts.elevenlabs directly)
-        providers = tts.get("providers") or {}
-
-        # Also check the top-level "talk" config which has provider settings too
-        talk_cfg = (config or self.load_openclaw_config()).get("talk") or {}
-        talk_providers = talk_cfg.get("providers") or {}
-
-        # Merge: messages.tts.providers takes priority, then talk.providers,
-        # then legacy flat keys (messages.tts.elevenlabs, etc.)
-        elevenlabs = (
-            (providers.get("elevenlabs") or {})
-            if isinstance(providers.get("elevenlabs"), dict) else
-            (talk_providers.get("elevenlabs") or {})
-            if isinstance(talk_providers.get("elevenlabs"), dict) else
-            (tts.get("elevenlabs") or {})
-        )
-        if isinstance(elevenlabs, dict):
-            el_settings: Dict[str, str] = {}
-            voice_id = elevenlabs.get("voiceId") or talk_cfg.get("voiceId")
-            if isinstance(voice_id, str) and voice_id.strip():
-                el_settings["voice_id"] = voice_id.strip()
-            model_id = elevenlabs.get("modelId") or talk_cfg.get("modelId")
-            if isinstance(model_id, str) and model_id.strip():
-                el_settings["model_id"] = model_id.strip()
-            if el_settings:
-                tts_data["elevenlabs"] = el_settings
-
-        openai_tts = (
-            (providers.get("openai") or {})
-            if isinstance(providers.get("openai"), dict) else
-            (talk_providers.get("openai") or {})
-            if isinstance(talk_providers.get("openai"), dict) else
-            (tts.get("openai") or {})
-        )
-        if isinstance(openai_tts, dict):
-            oai_settings: Dict[str, str] = {}
-            oai_model = openai_tts.get("model") or openai_tts.get("modelId")
-            if isinstance(oai_model, str) and oai_model.strip():
-                oai_settings["model"] = oai_model.strip()
-            oai_voice = openai_tts.get("voice")
-            if isinstance(oai_voice, str) and oai_voice.strip():
-                oai_settings["voice"] = oai_voice.strip()
-            if oai_settings:
-                tts_data["openai"] = oai_settings
-
-        edge_tts = (
-            (providers.get("edge") or providers.get("microsoft") or {})
-            if isinstance(providers.get("edge"), dict) or isinstance(providers.get("microsoft"), dict) else
-            (tts.get("edge") or tts.get("microsoft") or {})
-        )
-        if isinstance(edge_tts, dict):
-            edge_voice = edge_tts.get("voice")
-            if isinstance(edge_voice, str) and edge_voice.strip():
-                tts_data["edge"] = {"voice": edge_voice.strip()}
-
-        if not tts_data:
-            self.record("tts-config", source_path, destination, "skipped", "No compatible TTS settings found")
-            return
-
-        hermes_config = load_yaml_file(destination)
-        existing_tts = hermes_config.get("tts", {})
-        if not isinstance(existing_tts, dict):
-            existing_tts = {}
-
-        if self.execute:
-            backup_path = self.maybe_backup(destination)
-            merged_tts = dict(existing_tts)
-            for key, value in tts_data.items():
-                if isinstance(value, dict) and isinstance(merged_tts.get(key), dict):
-                    merged_tts[key] = {**merged_tts[key], **value}
-                else:
-                    merged_tts[key] = value
-            hermes_config["tts"] = merged_tts
-            dump_yaml_file(destination, hermes_config)
-            self.record("tts-config", source_path, destination, "migrated", backup=str(backup_path) if backup_path else "", settings=list(tts_data.keys()))
-        else:
-            self.record("tts-config", source_path, destination, "migrated", "Would set TTS config", settings=list(tts_data.keys()))
 
     def migrate_shared_skills(self) -> None:
         # Check all OpenClaw skill sources: managed, personal, project-level

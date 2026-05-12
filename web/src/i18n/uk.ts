@@ -351,7 +351,6 @@ export const uk: Translations = {
       security: "Безпека",
       browser: "Браузер",
       voice: "Голос",
-      tts: "Синтез мовлення",
       stt: "Розпізнавання мовлення",
       logging: "Журналювання",
       discord: "Discord",

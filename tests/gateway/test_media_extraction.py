@@ -1,9 +1,9 @@
 """
 Tests for MEDIA tag extraction from tool results.
 
-Verifies that MEDIA tags (e.g., from TTS tool) are only extracted from
+Verifies that MEDIA tags from tool output are only extracted from
 messages in the CURRENT turn, not from the full conversation history.
-This prevents voice messages from accumulating and being sent multiple
+This prevents old media attachments from accumulating and being sent multiple
 times per reply. (Regression test for #160)
 """
 
@@ -46,7 +46,7 @@ def extract_media_tags_fixed(result_messages, history_len):
 def extract_media_tags_broken(result_messages):
     """
     The BROKEN behavior: extract MEDIA tags from ALL messages including history.
-    This causes TTS voice messages to accumulate and be re-sent on every reply.
+    This causes old media attachments to accumulate and be re-sent on every reply.
     """
     media_tags = []
     has_voice_directive = False
@@ -70,10 +70,10 @@ class TestMediaExtraction:
     
     def test_media_tags_not_extracted_from_history(self):
         """MEDIA tags from previous turns should NOT be extracted again."""
-        # Simulate conversation history with a TTS call from a previous turn
+        # Simulate conversation history with a media-producing tool call from a previous turn
         history = [
             {"role": "user", "content": "Say hello as audio"},
-            {"role": "assistant", "content": None, "tool_calls": [{"id": "1", "function": {"name": "text_to_speech"}}]},
+            {"role": "assistant", "content": None, "tool_calls": [{"id": "1", "function": {"name": "export_media"}}]},
             {"role": "tool", "tool_call_id": "1", "content": '{"success": true, "media_tag": "[[audio_as_voice]]\\nMEDIA:/path/to/audio1.ogg"}'},
             {"role": "assistant", "content": "I've said hello for you!"},
         ]
@@ -99,16 +99,16 @@ class TestMediaExtraction:
     
     def test_media_tags_extracted_from_current_turn(self):
         """MEDIA tags from the current turn SHOULD be extracted."""
-        # History without TTS
+        # History without media output
         history = [
             {"role": "user", "content": "Hello"},
             {"role": "assistant", "content": "Hi there!"},
         ]
         
-        # New turn with TTS call
+        # New turn with media output
         new_messages = [
             {"role": "user", "content": "Say goodbye as audio"},
-            {"role": "assistant", "content": None, "tool_calls": [{"id": "2", "function": {"name": "text_to_speech"}}]},
+            {"role": "assistant", "content": None, "tool_calls": [{"id": "2", "function": {"name": "export_media"}}]},
             {"role": "tool", "tool_call_id": "2", "content": '{"success": true, "media_tag": "[[audio_as_voice]]\\nMEDIA:/path/to/audio2.ogg"}'},
             {"role": "assistant", "content": "I've said goodbye!"},
         ]
@@ -122,9 +122,9 @@ class TestMediaExtraction:
         assert "audio2.ogg" in tags[0]
         assert voice_directive is True
     
-    def test_multiple_tts_calls_in_history_not_accumulated(self):
-        """Multiple TTS calls in history should NOT accumulate in new responses."""
-        # History with multiple TTS calls
+    def test_multiple_media_outputs_in_history_not_accumulated(self):
+        """Multiple media outputs in history should NOT accumulate in new responses."""
+        # History with multiple media outputs
         history = [
             {"role": "user", "content": "Say hello"},
             {"role": "tool", "tool_call_id": "1", "content": 'MEDIA:/audio/hello.ogg'},
@@ -137,7 +137,7 @@ class TestMediaExtraction:
             {"role": "assistant", "content": "Done!"},
         ]
         
-        # New turn: no TTS
+        # New turn: no media output
         new_messages = [
             {"role": "user", "content": "What time is it?"},
             {"role": "assistant", "content": "3 PM"},
@@ -160,7 +160,7 @@ class TestMediaExtraction:
         
         # Current turn with multiple tool calls producing same media
         new_messages = [
-            {"role": "user", "content": "Multiple TTS"},
+            {"role": "user", "content": "Multiple media files"},
             {"role": "tool", "tool_call_id": "1", "content": 'MEDIA:/audio/same.ogg'},
             {"role": "tool", "tool_call_id": "2", "content": 'MEDIA:/audio/same.ogg'},  # duplicate
             {"role": "tool", "tool_call_id": "3", "content": 'MEDIA:/audio/different.ogg'},

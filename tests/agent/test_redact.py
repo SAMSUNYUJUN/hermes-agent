@@ -237,16 +237,16 @@ class TestSecretCapturePayloadRedaction:
         assert "abc123def456" not in result
 
 
-class TestElevenLabsTavilyExaKeys:
-    """Regression tests for ElevenLabs (sk_), Tavily (tvly-), and Exa (exa_) keys."""
+class TestOpenAITavilyExaKeys:
+    """Regression tests for OpenAI-style (sk_), Tavily (tvly-), and Exa (exa_) keys."""
 
-    def test_elevenlabs_key_redacted(self):
-        text = "ELEVENLABS_API_KEY=sk_abc123def456ghi789jklmnopqrstu"
+    def test_openai_style_key_redacted(self):
+        text = "OPENAI_API_KEY=sk_abc123def456ghi789jklmnopqrstu"
         result = redact_sensitive_text(text)
         assert "abc123def456ghi" not in result
 
-    def test_elevenlabs_key_in_log_line(self):
-        text = "Connecting to ElevenLabs with key sk_abc123def456ghi789jklmnopqrstu"
+    def test_openai_style_key_in_log_line(self):
+        text = "Connecting to an OpenAI-compatible client with key sk_abc123def456ghi789jklmnopqrstu"
         result = redact_sensitive_text(text)
         assert "abc123def456ghi" not in result
 
@@ -273,7 +273,7 @@ class TestElevenLabsTavilyExaKeys:
     def test_all_three_in_env_dump(self):
         env_dump = (
             "HOME=/home/user\n"
-            "ELEVENLABS_API_KEY=sk_abc123def456ghi789jklmnopqrstu\n"
+            "OPENAI_API_KEY=sk_abc123def456ghi789jklmnopqrstu\n"
             "TAVILY_API_KEY=tvly-ABCdef123456789GHIJKL0000\n"
             "EXA_API_KEY=exa_XYZ789abcdef000000000000000\n"
             "SHELL=/bin/bash\n"

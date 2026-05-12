@@ -329,9 +329,8 @@ gateway:
     save_failed:           "_(níorbh fhéidir sábháil sa chumraíocht: {error})_"
 
   voice:
-    enabled_voice_only:    "Mód gutha cumasaithe.\nFreagróidh mé le guth nuair a sheolann tú teachtaireachtaí gutha.\nÚsáid /voice tts chun freagraí gutha a fháil do gach teachtaireacht."
+    enabled_voice_only:    "Mód gutha cumasaithe."
     disabled_text:         "Mód gutha díchumasaithe. Freagraí téacs amháin."
-    tts_enabled:           "Auto-TTS cumasaithe.\nBeidh teachtaireacht gutha mar chuid de gach freagra."
     status_mode:           "Mód gutha: {label}"
     status_channel:        "Cainéal gutha: #{channel}"
     status_participants:   "Rannpháirtithe: {count}"
@@ -341,7 +340,6 @@ gateway:
     disabled_short:        "Mód gutha díchumasaithe."
     label_off:             "As (téacs amháin)"
     label_voice_only:      "Ar (freagra gutha do theachtaireachtaí gutha)"
-    label_all:             "TTS (freagra gutha do gach teachtaireacht)"
 
   yolo:
     disabled:                   "⚠️ Mód YOLO **AS** don seisiún seo — beidh cead de dhíth d'orduithe contúirteacha."

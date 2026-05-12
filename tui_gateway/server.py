@@ -42,7 +42,7 @@ load_hermes_dotenv(
 # appends every unhandled exception to ~/.hermes/logs/tui_gateway_crash.log
 # AND re-emits a one-line summary to stderr so the TUI can surface it in
 # Activity — exactly what was missing when the voice-mode turns started
-# exiting the gateway mid-TTS.
+# exiting the gateway during voice-mode cleanup.
 _CRASH_LOG = os.path.join(_hermes_home, "logs", "tui_gateway_crash.log")
 
 
@@ -3311,27 +3311,6 @@ def _run_prompt_submit(rid, sid: str, session: dict, text: Any) -> None:
                 except Exception:
                     pass
 
-            # CLI parity: when voice-mode TTS is on, speak the agent reply
-            # (cli.py:_voice_speak_response).  Only the final text — tool
-            # calls / reasoning already stream separately and would be
-            # noisy to read aloud.
-            if (
-                status == "complete"
-                and isinstance(raw, str)
-                and raw.strip()
-                and _voice_tts_enabled()
-            ):
-                try:
-                    from hermes_cli.voice import speak_text
-
-                    spoken = raw
-                    threading.Thread(
-                        target=speak_text, args=(spoken,), daemon=True
-                    ).start()
-                except ImportError:
-                    logger.warning("voice TTS skipped: hermes_cli.voice unavailable")
-                except Exception as e:
-                    logger.warning("voice TTS dispatch failed: %s", e)
         except Exception as e:
             import traceback
 
@@ -5169,7 +5148,7 @@ def _(rid, params: dict) -> dict:
         # classic CLI's /model picker). Do NOT overwrite with live
         # provider_model_ids() — that bypasses curation and pulls in
         # non-agentic models (e.g. Nous /models returns ~400 IDs including
-        # TTS, embeddings, rerankers, image/video generators).
+        # embeddings, rerankers, and image/video generators).
         user_provs = (
             cfg.get("providers") if isinstance(cfg.get("providers"), dict) else {}
         )
@@ -5564,11 +5543,6 @@ def _voice_mode_enabled() -> bool:
     return os.environ.get("HERMES_VOICE", "").strip() == "1"
 
 
-def _voice_tts_enabled() -> bool:
-    """Whether agent replies should be spoken back via TTS (runtime only)."""
-    return os.environ.get("HERMES_VOICE_TTS", "").strip() == "1"
-
-
 def _voice_cfg_dict() -> dict:
     """Shape-safe accessor for the ``voice:`` block in config.yaml.
 
@@ -5599,18 +5573,16 @@ def _(rid, params: dict) -> dict:
 
     Subcommands:
 
-    * ``status`` — report mode + TTS flags (default when action is unknown).
+    * ``status`` — report mode (default when action is unknown).
     * ``on`` / ``off`` — flip voice *mode* (the umbrella bit). Turning it
       off also tears down any active continuous recording loop. Does NOT
       start recording on its own; recording is driven by ``voice.record``
       (Ctrl+B) after mode is on, matching cli.py's enable/Ctrl+B split.
-    * ``tts`` — toggle speech-output of agent replies. Requires mode on
-      (mirrors CLI's _toggle_voice_tts guard).
     """
     action = params.get("action", "status")
 
     if action == "status":
-        # Mirror CLI's _show_voice_status: include STT/TTS provider
+        # Mirror CLI's _show_voice_status: include STT provider
         # availability so the user can tell at a glance *why* voice mode
         # isn't working ("STT provider: MISSING ..." is the common case).
         # ``record_key`` mirrors the configured ``voice.record_key`` so the
@@ -5620,7 +5592,6 @@ def _(rid, params: dict) -> dict:
         payload: dict = {
             "enabled": _voice_mode_enabled(),
             "record_key": _voice_record_key(),
-            "tts": _voice_tts_enabled(),
         }
         try:
             from tools.voice_mode import check_voice_requirements
@@ -5661,26 +5632,6 @@ def _(rid, params: dict) -> dict:
             {
                 "enabled": enabled,
                 "record_key": _voice_record_key(),
-                "tts": _voice_tts_enabled(),
-            },
-        )
-
-    if action == "tts":
-        if not _voice_mode_enabled():
-            return _err(rid, 4014, "enable voice mode first: /voice on")
-        new_value = not _voice_tts_enabled()
-        # Runtime-only flag (CLI parity) — see voice.toggle on/off above.
-        os.environ["HERMES_VOICE_TTS"] = "1" if new_value else "0"
-        # Include ``record_key`` on every branch so a /voice tts toggle
-        # doesn't reset the TUI's cached shortcut to the default when a
-        # user has a custom binding configured (Copilot review, round 2
-        # on #19835). Keeps parity with the status/on/off branches above.
-        return _ok(
-            rid,
-            {
-                "enabled": True,
-                "record_key": _voice_record_key(),
-                "tts": new_value,
             },
         )
 
@@ -5762,22 +5713,6 @@ def _(rid, params: dict) -> dict:
         )
     except Exception as e:
         return _err(rid, 5025, str(e))
-
-
-@method("voice.tts")
-def _(rid, params: dict) -> dict:
-    text = params.get("text", "")
-    if not text:
-        return _err(rid, 4020, "text required")
-    try:
-        from hermes_cli.voice import speak_text
-
-        threading.Thread(target=speak_text, args=(text,), daemon=True).start()
-        return _ok(rid, {"status": "speaking"})
-    except ImportError:
-        return _err(rid, 5026, "voice module not available")
-    except Exception as e:
-        return _err(rid, 5026, str(e))
 
 
 # ── Methods: insights ────────────────────────────────────────────────

@@ -66,7 +66,7 @@ def _log_signal(signum: int, frame) -> None:
     """Capture WHICH thread and WHERE a termination signal hit us.
 
     SIG_DFL for SIGPIPE kills the process silently the instant any
-    background thread (TTS playback, beep, voice status emitter, etc.)
+    background thread (beep, voice status emitter, etc.)
     writes to a stdout the TUI has stopped reading.  Without this
     handler the gateway-exited banner in the TUI has no trace — the
     crash log never sees a Python exception because the kernel reaps
@@ -99,7 +99,7 @@ def _log_signal(signum: int, frame) -> None:
                 f.write("main-thread stack at signal delivery:\n")
                 traceback.print_stack(frame, file=f)
             # All live threads — signal may have been triggered by a
-            # background thread (write to broken stdout from TTS, etc.).
+            # background thread (write to broken stdout from audio/status emitters, etc.).
             import threading as _threading
             for tid, th in _threading._active.items():
                 f.write(f"\n--- thread {th.name} (id={tid}) ---\n")
@@ -135,7 +135,7 @@ def _log_signal(signum: int, frame) -> None:
 
 
 # SIGPIPE: ignore, don't exit. The old SIG_DFL killed the process
-# silently whenever a *background* thread (TTS playback chain, voice
+# silently whenever a *background* thread (voice
 # debug stderr emitter, beep thread) wrote to a pipe the TUI had gone
 # quiet on — even though the main thread was perfectly fine waiting on
 # stdin.  Ignoring the signal lets Python raise BrokenPipeError on the
