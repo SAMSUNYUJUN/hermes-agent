@@ -727,6 +727,23 @@ def skill_manage(
 
     Returns JSON string with results.
     """
+    try:
+        import os
+        from tools.skill_provenance import is_background_review
+
+        if not is_background_review() and os.getenv("HERMES_ALLOW_FOREGROUND_SKILL_MANAGE", "").lower() not in {"1", "true", "yes", "on"}:
+            return tool_error(
+                "Foreground skill mutation is disabled. Skills may only be "
+                "created or updated by background learning jobs; use the DTC "
+                "site-search recorder for website search lessons.",
+                success=False,
+            )
+    except Exception:
+        return tool_error(
+            "Could not verify skill write provenance; refusing foreground skill mutation.",
+            success=False,
+        )
+
     if action == "create":
         if not content:
             return tool_error("content is required for 'create'. Provide the full SKILL.md text (frontmatter + body).", success=False)
@@ -797,8 +814,10 @@ def skill_manage(
 SKILL_MANAGE_SCHEMA = {
     "name": "skill_manage",
     "description": (
-        "Manage skills (create, update, delete). Skills are your procedural "
-        "memory — reusable approaches for recurring task types. "
+        "Background-only skill mutation tool. Normal foreground agents must "
+        "not call this tool; skills are generated or updated only by "
+        "background learning jobs. Skills are procedural memory — reusable "
+        "approaches for recurring task types. "
         f"New skills go to {display_hermes_home()}/skills/; existing skills can be modified wherever they live.\n\n"
         "Actions: create (full SKILL.md + optional category), "
         "patch (old_string/new_string — preferred for fixes), "

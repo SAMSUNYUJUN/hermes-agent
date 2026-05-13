@@ -66,6 +66,10 @@ _HERMES_CORE_TOOLS = [
     "kanban_unblock",
     # Computer use (macOS, gated on cua-driver being installed via check_fn)
     "computer_use",
+    # Internal TikTok SKU product-detail extraction (gated on Bytedance deps + index module)
+    "tiktok_sku_lookup",
+    # DTC independent-site exploration learner for TikTok SKU same-product search
+    "dtc_site_search_context", "dtc_site_search_record",
 ]
 
 
@@ -77,6 +81,18 @@ TOOLSETS = {
         "description": "Web research and content extraction tools",
         "tools": ["web_search", "web_extract"],
         "includes": []  # No other toolsets included
+    },
+
+    "tiktok_sku": {
+        "description": "Internal TikTok SKU product-detail extraction for later same-item matching",
+        "tools": ["tiktok_sku_lookup"],
+        "includes": []
+    },
+
+    "dtc_site_search": {
+        "description": "DTC independent-site exploration recording and site-specific search skill learning",
+        "tools": ["dtc_site_search_context", "dtc_site_search_record"],
+        "includes": []
     },
     
     "search": {

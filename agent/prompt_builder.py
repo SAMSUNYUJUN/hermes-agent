@@ -177,12 +177,10 @@ SESSION_SEARCH_GUIDANCE = (
 )
 
 SKILLS_GUIDANCE = (
-    "After completing a complex task (5+ tool calls), fixing a tricky error, "
-    "or discovering a non-trivial workflow, save the approach as a "
-    "skill with skill_manage so you can reuse it next time.\n"
-    "When using a skill and finding it outdated, incomplete, or wrong, "
-    "patch it immediately with skill_manage(action='patch') — don't wait to be asked. "
-    "Skills that aren't maintained become liabilities."
+    "Do not create, patch, or edit skills during the foreground conversation. "
+    "Skills are generated only by background learning jobs. Load relevant "
+    "skills with skill_view when available, but preserve new workflow lessons "
+    "through the appropriate background recorder instead of skill_manage."
 )
 
 KANBAN_GUIDANCE = (
@@ -1197,10 +1195,9 @@ def build_skills_system_prompt(
             "skills, voice, gateway, plugins, or any feature — load the `hermes-agent` skill "
             "first. It has the actual commands (e.g. `hermes config set …`, `hermes tools`, "
             "`hermes setup`) so you don't have to guess or invent workarounds.\n"
-            "If a skill has issues, fix it with skill_manage(action='patch').\n"
-            "After difficult/iterative tasks, offer to save as a skill. "
-            "If a skill you loaded was missing steps, had wrong commands, or needed "
-            "pitfalls you discovered, update it before finishing.\n"
+            "If a skill has issues, note the issue in your final answer or in the "
+            "task-specific background recorder; do not patch it during the "
+            "foreground conversation.\n"
             "\n"
             "<available_skills>\n"
             + "\n".join(index_lines) + "\n"

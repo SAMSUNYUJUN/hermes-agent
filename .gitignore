@@ -42,6 +42,9 @@ __pycache__/
 hermes_agent.egg-info/
 wandb/
 testlogs
+span.log
+.codex/
+dtc_site_search_data/
 
 # CLI config (may contain sensitive SSH paths)
 cli-config.yaml

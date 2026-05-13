@@ -19,7 +19,7 @@ Use any model you want — [Nous Portal](https://portal.nousresearch.com), [Open
 <table>
 <tr><td><b>A real terminal interface</b></td><td>Full TUI with multiline editing, slash-command autocomplete, conversation history, interrupt-and-redirect, and streaming tool output.</td></tr>
 <tr><td><b>Lives where you do</b></td><td>Feishu/Lark and CLI — chat from enterprise messaging while keeping the same sessions, memory, and tools.</td></tr>
-<tr><td><b>A closed learning loop</b></td><td>Agent-curated memory with periodic nudges. Autonomous skill creation after complex tasks. Skills self-improve during use. FTS5 session search with LLM summarization for cross-session recall. <a href="https://github.com/plastic-labs/honcho">Honcho</a> dialectic user modeling. Compatible with the <a href="https://agentskills.io">agentskills.io</a> open standard.</td></tr>
+<tr><td><b>A closed learning loop</b></td><td>Agent-curated memory with periodic nudges. Background-only skill creation for accumulated DTC site-search experience. FTS5 session search with LLM summarization for cross-session recall. <a href="https://github.com/plastic-labs/honcho">Honcho</a> dialectic user modeling. Compatible with the <a href="https://agentskills.io">agentskills.io</a> open standard.</td></tr>
 <tr><td><b>Scheduled automations</b></td><td>Built-in cron scheduler with delivery to any platform. Daily reports, nightly backups, weekly audits — all in natural language, running unattended.</td></tr>
 <tr><td><b>Delegates and parallelizes</b></td><td>Spawn isolated subagents for parallel workstreams. Write Python scripts that call tools via RPC, collapsing multi-step pipelines into zero-context-cost turns.</td></tr>
 <tr><td><b>Runs anywhere, not just your laptop</b></td><td>Seven terminal backends — local, Docker, SSH, Singularity, Modal, Daytona, and Vercel Sandbox. Daytona and Modal offer serverless persistence — your agent's environment hibernates when idle and wakes on demand, costing nearly nothing between sessions. Run it on a $5 VPS or a GPU cluster.</td></tr>
@@ -78,6 +78,107 @@ hermes doctor       # Diagnose any issues
 ```
 
 📖 **[Full documentation →](https://hermes-agent.nousresearch.com/docs/)**
+
+### Internal TikTok SKU Product Details
+
+Hermes includes an optional internal dependency set for TikTok SKU
+product-detail extraction. It enables the `tiktok_sku_lookup` tool, which
+accepts a numeric TikTok SKU id, caches the complete raw index feature dict
+under `HERMES_HOME/cache/price_comparison_sku_features/`, and returns a compact
+agent-facing payload containing only the product title, description, and SKU
+image URLs. The tool is intended to collect TikTok-side product evidence for
+later same-item matching against other websites; it does not compare prices or
+decide whether two products are the same.
+
+Install the internal dependencies when working in that environment. They are
+kept in a separate requirements file instead of `pyproject.toml` because the
+internal Bytedance dependency chain conflicts with Hermes' public `all` extra
+lock resolution.
+
+```bash
+python3 -m pip install -r dev/price_comparison_requirements.txt
+```
+
+By default the tool loads:
+`/mnt/bn/zhangwendong-nas06/xianyang/agent_price_comparison/util/fetch_index_feature.py`.
+Override that path with `PRICE_COMPARISON_FETCH_INDEX_FEATURE` if needed.
+
+### DTC Site Search Learning
+
+Hermes now treats skills as background-only artifacts for this workflow.
+Foreground conversations should not create or patch skills directly. For a
+TikTok SKU plus independent-site URL search, the agent loads SKU details,
+calls `dtc_site_search_context(site_url)`, and, when it returns
+`has_skill=true`, immediately calls `skill_view(name=skill_view_name)` before
+browsing. `dtc_site_search_context` intentionally returns only routing metadata
+and loading instructions, not the full skill body, so repeated runs do not spend
+tokens on site guidance unless a matching skill exists and is explicitly loaded.
+
+When a site skill was loaded, the first browsing step should follow that
+skill's `Minimal Successful Path`, even if it starts at a canonical redirect
+target, catalog host, category URL, or product listing URL instead of the
+supplied DTC URL. The loaded skill overrides the generic direct-navigation
+fallback. The agent should avoid unnecessary preliminary snapshots, dead-end UI
+paths, poor site-search patterns, or broad exploration already identified by
+prior runs. If no site skill exists, it should navigate directly to the supplied
+DTC URL with `browser_navigate`, then inspect with `browser_snapshot` and
+interactive browser actions such as `browser_click`, `browser_type`, and
+`browser_press`. It should not start with Google or broad web search. Web search
+is a fallback after direct site exploration fails or reveals a related catalog
+domain.
+
+Each completed exploration is grouped by normalized site URL under the checkout:
+`./dtc_site_search_data/<site-key>/`:
+
+- `raw/<record-id>.json` stores the structured record from
+  `dtc_site_search_record` for one completed exploration. It is not the full
+  Hermes transcript and is not produced by scanning all prior explorations.
+- `cleaned/<record-id>.md` stores the background LLM-cleaned search chain,
+  candidate product URLs, and pitfalls for that same single raw record. The
+  cleanup pass uses the Hermes conversation in `~/.hermes/state.db` as the
+  primary source when the session id is available, with `raw/` as structured
+  metadata/summary.
+- `state.json` tracks the normalized site URL, success count, threshold, and
+  generated skill name.
+
+Once a site has `dtc_site_search.success_threshold` successful cleaned chains,
+Hermes promotes those cleaned chains into a site-specific skill under
+`./skills/dtc-site-search/<skill-name>/SKILL.md`; every further batch
+of N successes can update that same site skill. The generated skill is a
+minimal-path website-search guide, not a transcript summary. It should teach
+the fewest repeatable actions needed to reach useful candidate product pages:
+the real redirected catalog domain when applicable, durable all-products or
+collection URLs, whether search is actually useful, and any tiny-catalog
+enumeration shortcut. It must also include a negative path section that tells
+the agent what not to click, where not to type, which old/redirecting surfaces
+to stop exploring, and which snapshots or broad exploration steps are known
+waste. It should not copy concrete SKU examples, one-off search queries, or
+candidate product details. The default N is 5.
+Because these generated skills live inside this checkout, this checkout's
+`skills/` directory must be present in `skills.external_dirs` for
+`skill_view(name=...)` to load them explicitly.
+
+For same-item judgment, when both the TikTok SKU and the independent-site
+candidate have images, the agent should use its vision capability to compare
+the products visually. If either side has no image, it skips visual comparison.
+
+Hermes also maintains an index skill at
+`./skills/dtc-site-search-index/SKILL.md`. This progressive prompt lists the
+site-specific DTC search skills that currently exist and reminds the agent to
+load the matching site skill before exploration.
+
+The storage roots can be overridden for one run with:
+
+```bash
+HERMES_DTC_SITE_SEARCH_DATA_DIR=/path/to/dtc_site_search_data \
+HERMES_DTC_SITE_SEARCH_SKILL_DIR=/path/to/skills/dtc-site-search \
+./hermes
+```
+
+```yaml
+dtc_site_search:
+  success_threshold: 5
+```
 
 ## CLI vs Messaging Quick Reference
 
