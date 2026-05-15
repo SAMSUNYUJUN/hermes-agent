@@ -1,0 +1,13 @@
+{
+  "version": "v1778878820739-992c1c45",
+  "site_url": "https://beachcamera.com",
+  "site_key": "beachcamera-com-02b60e670104",
+  "type": "tool",
+  "status": "candidate",
+  "created_at": "20260515T210020Z",
+  "source_records": [
+    "20260515T205007Z-2a09ada7",
+    "20260515T205746Z-08731865"
+  ],
+  "base_skill_name": "dtc-site-beachcamera-com-02b60e670104"
+}

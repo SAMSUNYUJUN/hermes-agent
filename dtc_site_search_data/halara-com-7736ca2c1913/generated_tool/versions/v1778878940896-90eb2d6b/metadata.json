@@ -1,0 +1,13 @@
+{
+  "version": "v1778878940896-90eb2d6b",
+  "site_url": "https://halara.com",
+  "site_key": "halara-com-7736ca2c1913",
+  "type": "tool",
+  "status": "candidate",
+  "created_at": "20260515T210220Z",
+  "source_records": [
+    "20260515T205220Z-80f63ccf",
+    "20260515T205927Z-62ed3ada"
+  ],
+  "base_skill_name": "dtc-site-halara-com-7736ca2c1913"
+}

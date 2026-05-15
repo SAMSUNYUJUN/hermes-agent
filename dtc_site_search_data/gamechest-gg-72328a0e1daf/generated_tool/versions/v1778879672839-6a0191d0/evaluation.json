@@ -1,0 +1,127 @@
+{
+  "version": "v1778879672839-6a0191d0",
+  "site_url": "https://gamechest.gg",
+  "candidate_type": "tool_repair",
+  "status": "approved",
+  "ab_mode": "smoke_only",
+  "pass": true,
+  "metrics": {
+    "smoke_success": true,
+    "candidate_count": 0
+  },
+  "test_result": {
+    "success": true,
+    "output": {
+      "success": true,
+      "candidates": [],
+      "evidence": {
+        "site_url": "https://gamechest.gg",
+        "canonical_site_url": "https://www.gamechest.gg",
+        "strategy": "Shopify catalog JSON enumeration, backup all-products endpoint if needed, and predictive search confirmation including broad fallback terms.",
+        "searched_fields": [
+          "title",
+          "handle",
+          "vendor",
+          "product_type",
+          "tags",
+          "variants"
+        ],
+        "query": "self test",
+        "expected_terms": [],
+        "normalized_phrases": [
+          "self test"
+        ],
+        "normalized_tokens": [
+          "self",
+          "test"
+        ],
+        "catalog_counts": {
+          "https://www.gamechest.gg/products.json?limit=250": 88
+        },
+        "endpoint_errors": [],
+        "catalog_products_enumerated": 88,
+        "catalog_matches": 0,
+        "predictive_search_queries": [
+          "self test",
+          "self",
+          "test"
+        ],
+        "predictive_matches": 0,
+        "page_verifications": []
+      },
+      "trace": [
+        {
+          "at": "2026-05-15T21:14:33.459Z",
+          "action": "start",
+          "site_url": "https://gamechest.gg",
+          "query": "self test",
+          "max_candidates": 1
+        },
+        {
+          "at": "2026-05-15T21:14:33.776Z",
+          "action": "fetch_json",
+          "url": "https://www.gamechest.gg/products.json?limit=250",
+          "status": 200,
+          "ok": true,
+          "ms": 284,
+          "bytes": 257915,
+          "parse_ok": true
+        },
+        {
+          "at": "2026-05-15T21:14:33.917Z",
+          "action": "fetch_json",
+          "url": "https://www.gamechest.gg/search/suggest.json?q=self%20test&resources[type]=product&resources[limit]=10",
+          "status": 200,
+          "ok": true,
+          "ms": 136,
+          "bytes": 41,
+          "parse_ok": true
+        },
+        {
+          "at": "2026-05-15T21:14:33.917Z",
+          "action": "predictive_search_results",
+          "query": "self test",
+          "count": 0
+        },
+        {
+          "at": "2026-05-15T21:14:34.065Z",
+          "action": "fetch_json",
+          "url": "https://www.gamechest.gg/search/suggest.json?q=self&resources[type]=product&resources[limit]=10",
+          "status": 200,
+          "ok": true,
+          "ms": 148,
+          "bytes": 41,
+          "parse_ok": true
+        },
+        {
+          "at": "2026-05-15T21:14:34.065Z",
+          "action": "predictive_search_results",
+          "query": "self",
+          "count": 0
+        },
+        {
+          "at": "2026-05-15T21:14:34.224Z",
+          "action": "fetch_json",
+          "url": "https://www.gamechest.gg/search/suggest.json?q=test&resources[type]=product&resources[limit]=10",
+          "status": 200,
+          "ok": true,
+          "ms": 159,
+          "bytes": 41,
+          "parse_ok": true
+        },
+        {
+          "at": "2026-05-15T21:14:34.224Z",
+          "action": "predictive_search_results",
+          "query": "test",
+          "count": 0
+        },
+        {
+          "at": "2026-05-15T21:14:34.224Z",
+          "action": "complete",
+          "candidates": 0
+        }
+      ]
+    }
+  },
+  "created_at": "20260515T211434Z"
+}

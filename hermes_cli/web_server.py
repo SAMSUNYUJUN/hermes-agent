@@ -83,6 +83,45 @@ _reveal_timestamps: List[float] = []
 _REVEAL_MAX_PER_WINDOW = 5
 _REVEAL_WINDOW_SECONDS = 30
 
+
+class DtcSiteSearchRunRequest(BaseModel):
+    """Stateless single DTC search request for batch/concurrency testing."""
+
+    request: str = ""
+    sku_id: str = ""
+    site_url: str = ""
+    max_iterations: int = 30
+    model: str = ""
+
+
+class DtcSiteSearchAbCaseRequest(BaseModel):
+    index: int = 0
+    sku_id: str = ""
+    domain: str = ""
+    prompt: str = ""
+    expected: str = ""
+    product_id: str = ""
+
+
+class DtcSiteSearchAbRequest(BaseModel):
+    """Batch DTC site-search A/B request executed inside this Hermes process."""
+
+    cases: List[DtcSiteSearchAbCaseRequest] = []
+    modes: List[str] = ["candidate", "baseline_skill"]
+    concurrency: int = 1
+    max_iterations: int = 30
+    model: str = ""
+    min_token_reduction_rate: float = 0.05
+
+
+def _build_dtc_site_search_prompt(body: DtcSiteSearchRunRequest) -> str:
+    from agent.dtc_site_search_ab import build_stateless_prompt
+
+    try:
+        return build_stateless_prompt(body.request, body.sku_id, body.site_url)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Provide either request or both sku_id and site_url")
+
 # CORS: restrict to localhost origins only.  The web UI is intended to run
 # locally; binding to 0.0.0.0 with allow_origins=["*"] would let any website
 # read/modify config and secrets.
@@ -619,6 +658,79 @@ async def get_status():
         "gateway_updated_at": gateway_updated_at,
         "active_sessions": active_sessions,
     }
+
+
+@app.post("/api/dtc-site-search/run")
+async def run_dtc_site_search(body: DtcSiteSearchRunRequest):
+    """Run a single no-history DTC search request for load/concurrency tests.
+
+    The endpoint intentionally creates a fresh Hermes session per request. It
+    does not reuse dashboard chat state, memory, or prior conversation history.
+    It is protected by the dashboard session token middleware like other
+    mutating `/api/*` endpoints.
+    """
+    prompt = _build_dtc_site_search_prompt(body)
+    max_iterations = max(5, min(int(body.max_iterations or 30), 90))
+
+    def _run() -> Dict[str, Any]:
+        from agent.dtc_site_search_ab import run_agent_prompt
+
+        return run_agent_prompt(
+            prompt,
+            session_prefix="dtc_api",
+            max_iterations=max_iterations,
+            model=body.model.strip() if body.model else "",
+        )
+
+    try:
+        return await asyncio.to_thread(_run)
+    except Exception as exc:
+        _log.exception("DTC site-search API request failed")
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.post("/api/dtc-site-search/ab")
+async def run_dtc_site_search_ab(body: DtcSiteSearchAbRequest):
+    """Run candidate-vs-baseline DTC site-search A/B inside this Hermes process."""
+    if not body.cases:
+        raise HTTPException(status_code=400, detail="cases is required")
+    modes = [str(mode).strip() for mode in (body.modes or []) if str(mode).strip()]
+    if not modes:
+        raise HTTPException(status_code=400, detail="modes is required")
+    max_iterations = max(5, min(int(body.max_iterations or 30), 90))
+    concurrency = max(1, min(int(body.concurrency or 1), 16))
+
+    def _run() -> Dict[str, Any]:
+        from agent.dtc_site_search_ab import DtcSiteSearchAbCase, run_ab_cases
+
+        cases = [
+            DtcSiteSearchAbCase(
+                index=int(case.index),
+                sku_id=str(case.sku_id or ""),
+                domain=str(case.domain or ""),
+                prompt=str(case.prompt or ""),
+                expected=str(case.expected or ""),
+                product_id=str(case.product_id or ""),
+            )
+            for case in body.cases
+            if str(case.prompt or "").strip()
+        ]
+        if not cases:
+            raise ValueError("cases must include at least one non-empty prompt")
+        return run_ab_cases(
+            cases,
+            modes=modes,
+            concurrency=concurrency,
+            max_iterations=max_iterations,
+            model=body.model.strip() if body.model else "",
+            min_token_reduction_rate=max(0.0, float(body.min_token_reduction_rate or 0.0)),
+        )
+
+    try:
+        return await asyncio.to_thread(_run)
+    except Exception as exc:
+        _log.exception("DTC site-search A/B API request failed")
+        raise HTTPException(status_code=500, detail=str(exc))
 
 
 # ---------------------------------------------------------------------------

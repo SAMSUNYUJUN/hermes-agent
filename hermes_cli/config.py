@@ -1110,11 +1110,17 @@ DEFAULT_CONFIG = {
     # DTC independent-site search learning.
     #
     # A cleaned exploration chain is produced in the background after each
-    # completed TikTok SKU → DTC site search. Once this many successful cleaned
-    # chains accumulate for the same normalized site URL, Hermes creates or
-    # updates that site's search skill.
+    # completed TikTok SKU → DTC site search. Once success_threshold successful
+    # cleaned chains accumulate for the same normalized site URL, Hermes creates
+    # that site's search skill. After a skill exists, every skill_update_window
+    # successful fallback chains are reviewed for skill updates. When
+    # tool_generation_stable_updates consecutive review passes leave the skill
+    # unchanged, Hermes tries to generate and self-test a site-specific tool.
     "dtc_site_search": {
-        "success_threshold": 5,
+        "success_threshold": 2,
+        "skill_update_window": 1,
+        "tool_generation_stable_updates": 2,
+        "tool_failure_disable_threshold": 3,
     },
 
     # Honcho AI-native memory -- reads ~/.honcho/config.json as single source of truth.

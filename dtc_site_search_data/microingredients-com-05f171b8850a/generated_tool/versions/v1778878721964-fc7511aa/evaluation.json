@@ -1,0 +1,251 @@
+{
+  "version": "v1778878721964-fc7511aa",
+  "site_url": "https://microingredients.com",
+  "candidate_type": "tool",
+  "status": "ab_failed",
+  "ab_mode": "historical_expected_url",
+  "pass": false,
+  "metrics": {
+    "smoke_success": true,
+    "candidate_count": 1,
+    "historical_cases": 4,
+    "historical_pass_rate": 0.25
+  },
+  "test_result": {
+    "success": true,
+    "output": {
+      "success": true,
+      "candidates": [
+        {
+          "rank": 1,
+          "title": "Micro Ingredients Biotin 5,000mcg | 365 Virgin Coconut Oil Softgels",
+          "url": "https://www.microingredients.com/products/micro-ingredients-biotin-5-000mcg-365-virgin-coconut-oil-softgels",
+          "js_url": "https://www.microingredients.com/products/micro-ingredients-biotin-5-000mcg-365-virgin-coconut-oil-softgels.js",
+          "handle": "micro-ingredients-biotin-5-000mcg-365-virgin-coconut-oil-softgels",
+          "score": 45,
+          "matched_terms": [],
+          "query_token_matches": [
+            "self",
+            "test"
+          ],
+          "vendor": "Micro Ingredients",
+          "variants": [
+            {
+              "id": 45875673530595,
+              "title": "Default Title",
+              "available": true,
+              "price": 2395,
+              "sku": "BA-MI-BIO365"
+            }
+          ],
+          "images": [
+            "//cdn.shopify.com/s/files/1/1866/1287/files/Product-Walmart_13.jpg?v=1771613218",
+            "//cdn.shopify.com/s/files/1/1866/1287/files/biotin_2_aafa1385-275f-4ce5-905e-b32d5c467ad2.jpg?v=1771613218",
+            "//cdn.shopify.com/s/files/1/1866/1287/files/biotin_3.png?v=1771613218",
+            "//cdn.shopify.com/s/files/1/1866/1287/files/biotin_6_6b12f00c-927a-438d-94b9-f3851e10d2cc.jpg?v=1771613218",
+            "//cdn.shopify.com/s/files/1/1866/1287/files/4-1.jpg?v=1771613218",
+            "//cdn.shopify.com/s/files/1/1866/1287/files/4_eff852a4-aa7b-418a-a2e4-9f777a0d795c.jpg?v=1771613218"
+          ],
+          "description": "· Micro Ingredients offers extra strength biotin 5,000mcg coconut oil softgels. Offering year-round hair, skin, nail, and energy support for an overall radiant look and feeling. Infused with a cold-pressed virgin coconut oil liquid base versus other potentially harmful soy-based products. · A powerful once-daily biotin 5,000mcg supplement that is derived from premium D-Biotin. Every pouch offers a full year supply that only takes a single softgel serving size to promote overall confidence, inside and out. · Biotin, also known as vitamin B7, is an essential beauty vitamin that is a part of the B complex vitamins family. · Upgrade your self-care routine with Micro Ingredients optimally dosed biotin formula. Providing maximized support from essential nutrients your body craves. Take it by itself or pair it with other beauty products to create the ultimate rejuvenating stack. · Premium non-GMO supplements. Made without soy, dairy, and gluten. Ingredients must pass our 3rd party lab tests to ensure a product that is safe, pure, and potent.",
+          "sources": [
+            "search_html_anchor"
+          ]
+        }
+      ],
+      "evidence": {
+        "requested_site_url": "https://microingredients.com",
+        "canonical_host": "https://www.microingredients.com",
+        "strategy": "Micro Ingredients Shopify exact search via /search?q=, product links, predictive search JSON fallback, and /products/<handle>.js verification.",
+        "search_urls": [
+          "https://www.microingredients.com/search?q=self%20test",
+          "https://www.microingredients.com/search/suggest.json?q=self%20test&resources[type]=product&resources[limit]=10&resources[options][unavailable_products]=last"
+        ],
+        "product_json_attempts": [
+          "https://www.microingredients.com/products/micro-ingredients-emily-may-s-glow-hair-bundle.js",
+          "https://www.microingredients.com/products/pure-oregano-oil-for-cold-relief.js",
+          "https://www.microingredients.com/products/micro-ingredients-astaxanthin-12mg-softgels-tanning-pills-strength-carotenoids-skin-supplement-w-100.js",
+          "https://www.microingredients.com/products/micro-ingredients-nmn-1000mg-per-serving-120-veggie-capsules.js",
+          "https://www.microingredients.com/products/astaxanthin-softgel.js",
+          "https://www.microingredients.com/products/biotin-supplement-hyaluronic-acid-softgel.js",
+          "https://www.microingredients.com/products/micro-ingredients-organic-castor-oil-32-fl-oz.js",
+          "https://www.microingredients.com/products/micro-ingredients-biotin-5-000mcg-365-virgin-coconut-oil-softgels.js"
+        ],
+        "discovered_product_urls": [
+          "https://www.microingredients.com/products/micro-ingredients-emily-may-s-glow-hair-bundle",
+          "https://www.microingredients.com/products/pure-oregano-oil-for-cold-relief",
+          "https://www.microingredients.com/products/micro-ingredients-astaxanthin-12mg-softgels-tanning-pills-strength-carotenoids-skin-supplement-w-100",
+          "https://www.microingredients.com/products/micro-ingredients-nmn-1000mg-per-serving-120-veggie-capsules",
+          "https://www.microingredients.com/products/astaxanthin-softgel",
+          "https://www.microingredients.com/products/biotin-supplement-hyaluronic-acid-softgel",
+          "https://www.microingredients.com/products/micro-ingredients-organic-castor-oil-32-fl-oz",
+          "https://www.microingredients.com/products/micro-ingredients-biotin-5-000mcg-365-virgin-coconut-oil-softgels",
+          "https://www.microingredients.com/products/self-test"
+        ],
+        "fetch_count": 10
+      },
+      "trace": [
+        {
+          "step": "search_html",
+          "url": "https://www.microingredients.com/search?q=self%20test",
+          "at": "2026-05-15T20:58:42.962Z",
+          "status": 200,
+          "final_url": "https://www.microingredients.com/search?q=self%20test",
+          "ok": true,
+          "bytes": 497883
+        },
+        {
+          "step": "search_suggest_json",
+          "url": "https://www.microingredients.com/search/suggest.json?q=self%20test&resources[type]=product&resources[limit]=10&resources[options][unavailable_products]=last",
+          "at": "2026-05-15T20:58:43.817Z",
+          "status": 200,
+          "final_url": "https://www.microingredients.com/search/suggest.json?q=self%20test&resources[type]=product&resources[limit]=10&resources[options][unavailable_products]=last",
+          "ok": true
+        },
+        {
+          "step": "product_js",
+          "url": "https://www.microingredients.com/products/micro-ingredients-emily-may-s-glow-hair-bundle.js",
+          "at": "2026-05-15T20:58:43.926Z",
+          "status": 200,
+          "final_url": "https://www.microingredients.com/products/micro-ingredients-emily-may-s-glow-hair-bundle.js",
+          "ok": true
+        },
+        {
+          "step": "product_js",
+          "url": "https://www.microingredients.com/products/pure-oregano-oil-for-cold-relief.js",
+          "at": "2026-05-15T20:58:43.994Z",
+          "status": 200,
+          "final_url": "https://www.microingredients.com/products/pure-oregano-oil-for-cold-relief.js",
+          "ok": true
+        },
+        {
+          "step": "product_js",
+          "url": "https://www.microingredients.com/products/micro-ingredients-astaxanthin-12mg-softgels-tanning-pills-strength-carotenoids-skin-supplement-w-100.js",
+          "at": "2026-05-15T20:58:44.087Z",
+          "status": 200,
+          "final_url": "https://www.microingredients.com/products/micro-ingredients-astaxanthin-12mg-softgels-tanning-pills-strength-carotenoids-skin-supplement-w-100.js",
+          "ok": true
+        },
+        {
+          "step": "product_js",
+          "url": "https://www.microingredients.com/products/micro-ingredients-nmn-1000mg-per-serving-120-veggie-capsules.js",
+          "at": "2026-05-15T20:58:44.171Z",
+          "status": 200,
+          "final_url": "https://www.microingredients.com/products/micro-ingredients-nmn-1000mg-per-serving-120-veggie-capsules.js",
+          "ok": true
+        },
+        {
+          "step": "product_js",
+          "url": "https://www.microingredients.com/products/astaxanthin-softgel.js",
+          "at": "2026-05-15T20:58:44.247Z",
+          "status": 200,
+          "final_url": "https://www.microingredients.com/products/astaxanthin-softgel.js",
+          "ok": true
+        },
+        {
+          "step": "product_js",
+          "url": "https://www.microingredients.com/products/biotin-supplement-hyaluronic-acid-softgel.js",
+          "at": "2026-05-15T20:58:44.325Z",
+          "status": 200,
+          "final_url": "https://www.microingredients.com/products/biotin-supplement-hyaluronic-acid-softgel.js",
+          "ok": true
+        },
+        {
+          "step": "product_js",
+          "url": "https://www.microingredients.com/products/micro-ingredients-organic-castor-oil-32-fl-oz.js",
+          "at": "2026-05-15T20:58:44.416Z",
+          "status": 200,
+          "final_url": "https://www.microingredients.com/products/micro-ingredients-organic-castor-oil-32-fl-oz.js",
+          "ok": true
+        },
+        {
+          "step": "product_js",
+          "url": "https://www.microingredients.com/products/micro-ingredients-biotin-5-000mcg-365-virgin-coconut-oil-softgels.js",
+          "at": "2026-05-15T20:58:44.508Z",
+          "status": 200,
+          "final_url": "https://www.microingredients.com/products/micro-ingredients-biotin-5-000mcg-365-virgin-coconut-oil-softgels.js",
+          "ok": true
+        }
+      ]
+    }
+  },
+  "ab_result": {
+    "ab_mode": "historical_expected_url",
+    "cases": 4,
+    "passed": 1,
+    "pass_rate": 0.25,
+    "pass": false,
+    "results": [
+      {
+        "record_id": "20260515T203446Z-651c2182",
+        "pass": true,
+        "expected_urls": [
+          "https://microingredients.com/products/astaxanthin-softgel",
+          "https://microingredients.com/products/micro-ingredients-emily-may-s-glow-hair-bundle",
+          "https://microingredients.com/products/micro-ingredients-mermaid-glow-bundle",
+          "https://microingredients.com/products/pumpkin-seed-oil-saw-palmetto-softgels"
+        ],
+        "candidate_urls": [
+          "https://microingredients.com/products/micro-ingredients-emily-may-s-glow-hair-bundle",
+          "https://microingredients.com/products/astaxanthin-softgel",
+          "https://microingredients.com/products/micro-ingredients-astaxanthin-12mg-softgels-tanning-pills-strength-carotenoids-skin-supplement-w-100",
+          "https://microingredients.com/products/pure-oregano-oil-for-cold-relief",
+          "https://microingredients.com/products/micro-ingredients-nmn-1000mg-per-serving-120-veggie-capsules"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T204156Z-3171090c",
+        "pass": false,
+        "expected_urls": [
+          "https://microingredients.com/products/brookes-anti-aging-bundle"
+        ],
+        "candidate_urls": [
+          "https://microingredients.com/products/astaxanthin-softgel",
+          "https://microingredients.com/products/micro-ingredients-nmn-1000mg-per-serving-120-veggie-capsules",
+          "https://microingredients.com/products/micro-ingredients-astaxanthin-12mg-softgels-tanning-pills-strength-carotenoids-skin-supplement-w-100",
+          "https://microingredients.com/products/pure-oregano-oil-for-cold-relief",
+          "https://microingredients.com/products/micro-ingredients-emily-may-s-glow-hair-bundle"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T204847Z-48df920c",
+        "pass": false,
+        "expected_urls": [
+          "https://microingredients.com/products/micro-ingredients-liver-detox-240-veggie-capsules-20-in-1-advanced-support-complex",
+          "https://microingredients.com/products/micro-ingredients-liver-detox-240-veggie-capsules-20-in-1-advanced-support-complex.js"
+        ],
+        "candidate_urls": [
+          "https://microingredients.com/products/pure-oregano-oil-for-cold-relief",
+          "https://microingredients.com/products/micro-ingredients-emily-may-s-glow-hair-bundle",
+          "https://microingredients.com/products/micro-ingredients-nmn-1000mg-per-serving-120-veggie-capsules",
+          "https://microingredients.com/products/micro-ingredients-astaxanthin-12mg-softgels-tanning-pills-strength-carotenoids-skin-supplement-w-100",
+          "https://microingredients.com/products/astaxanthin-softgel"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T205648Z-be89c2c3",
+        "pass": false,
+        "expected_urls": [
+          "https://microingredients.com/products/micro-ingredients-hair-muscle-nourish-bundle",
+          "https://microingredients.com/products/micronized-creatine-monohydrate-unflavored"
+        ],
+        "candidate_urls": [
+          "https://microingredients.com/products/micro-ingredients-astaxanthin-12mg-softgels-tanning-pills-strength-carotenoids-skin-supplement-w-100",
+          "https://microingredients.com/products/astaxanthin-softgel",
+          "https://microingredients.com/products/micro-ingredients-nmn-1000mg-per-serving-120-veggie-capsules",
+          "https://microingredients.com/products/pure-oregano-oil-for-cold-relief",
+          "https://microingredients.com/products/micro-ingredients-emily-may-s-glow-hair-bundle"
+        ],
+        "tool_success": true,
+        "error": null
+      }
+    ]
+  },
+  "repair_attempts": [],
+  "created_at": "20260515T205855Z"
+}

@@ -1,0 +1,227 @@
+{
+  "version": "v1778879606881-a9aa9c2b",
+  "site_url": "https://beachcamera.com",
+  "candidate_type": "tool",
+  "status": "approved",
+  "ab_mode": "historical_expected_url",
+  "pass": true,
+  "metrics": {
+    "smoke_success": true,
+    "candidate_count": 1,
+    "historical_cases": 5,
+    "historical_pass_rate": 1.0
+  },
+  "test_result": {
+    "success": true,
+    "output": {
+      "success": true,
+      "candidates": [
+        {
+          "title": "General For TESTING PURPOSES - DO NOT BUY",
+          "url": "https://www.beachcamera.com/products/general-for-testing-purposes-do-not-buy",
+          "brand": "General",
+          "sku": "RYANTEST2",
+          "availability": "available",
+          "image": "https://cdn.shopify.com/s/files/1/0504/3555/5511/files/890199_1.jpg?v=1753032165",
+          "score": 14,
+          "source": "site_search",
+          "search_rank": 2,
+          "evidence": {
+            "search_result_url": "https://www.beachcamera.com/products/general-for-testing-purposes-do-not-buy?_pos=2&_sid=77f0eac85&_ss=r",
+            "search_rank": 2,
+            "search_context": "span> Add to cart View details Compare General General For TESTING PURPOSES - DO NOT BUY $1.23 / Add to cart View details Compare General General For TESTING PURPOSES - DO NOT BUY $1.23 / Add to cart View details Compare General General For TESTING PURPOSES - DO NOT BUY $1.23 / Add to cart View details Compare <img class=\"lazyload no-blur product-primary-image\" width=\"1000\" height=\"1000\" data-sizes=\"auto\" src=\"//www.beachcamera.com/cdn/shop/files/1166064_1.jpg?crop=center&height=375&v=1773031590&width=375\" data-srcset=\"//www.beachcamera.com/cdn/shop/files/1166064_1.jpg?v=1773031590&width=375 375w,/",
+            "shopify_product_json": {
+              "id": 7292629090487,
+              "handle": "general-for-testing-purposes-do-not-buy",
+              "vendor": "General",
+              "available": true,
+              "variant_count": 1
+            }
+          }
+        }
+      ],
+      "evidence": {
+        "site": "https://www.beachcamera.com",
+        "input_site_url": "https://beachcamera.com",
+        "strategy": "direct Beach Camera www search URL; extract /products/ links from search DOM; verify extracted handles via Shopify product JSON or product page",
+        "searched_urls": [
+          "https://www.beachcamera.com/search?q=self+test"
+        ],
+        "queries": [
+          "self test"
+        ],
+        "product_links_found": 12,
+        "candidates_returned": 1
+      },
+      "trace": [
+        {
+          "t": 0,
+          "event": "start",
+          "site_url": "https://beachcamera.com",
+          "normalized_site": "https://www.beachcamera.com",
+          "query": "self test",
+          "expected_terms_count": 0,
+          "max_candidates": 1
+        },
+        {
+          "t": 4,
+          "event": "fetch_start",
+          "label": "search_results",
+          "url": "https://www.beachcamera.com/search?q=self+test"
+        },
+        {
+          "t": 1039,
+          "event": "fetch_done",
+          "label": "search_results",
+          "url": "https://www.beachcamera.com/search?q=self+test",
+          "status": 200,
+          "ms": 1035,
+          "bytes": 418117
+        },
+        {
+          "t": 1048,
+          "event": "search_parsed",
+          "query": "self test",
+          "finalUrl": "https://www.beachcamera.com/search?q=self+test",
+          "product_links": 12
+        },
+        {
+          "t": 1048,
+          "event": "fetch_start",
+          "label": "shopify_product_json",
+          "url": "https://www.beachcamera.com/products/logitech-core-pc-pro-flight-rudder-pedals.js"
+        },
+        {
+          "t": 1135,
+          "event": "fetch_done",
+          "label": "shopify_product_json",
+          "url": "https://www.beachcamera.com/products/logitech-core-pc-pro-flight-rudder-pedals.js",
+          "status": 200,
+          "ms": 87,
+          "bytes": 12103
+        },
+        {
+          "t": 1136,
+          "event": "fetch_start",
+          "label": "shopify_product_json",
+          "url": "https://www.beachcamera.com/products/general-for-testing-purposes-do-not-buy.js"
+        },
+        {
+          "t": 1231,
+          "event": "fetch_done",
+          "label": "shopify_product_json",
+          "url": "https://www.beachcamera.com/products/general-for-testing-purposes-do-not-buy.js",
+          "status": 200,
+          "ms": 95,
+          "bytes": 1868
+        },
+        {
+          "t": 1231,
+          "event": "fetch_start",
+          "label": "shopify_product_json",
+          "url": "https://www.beachcamera.com/products/olight-odin-gl-m-rechargeable-rail-mounted-tactical-light-1500-lumens-green-beam.js"
+        },
+        {
+          "t": 1317,
+          "event": "fetch_done",
+          "label": "shopify_product_json",
+          "url": "https://www.beachcamera.com/products/olight-odin-gl-m-rechargeable-rail-mounted-tactical-light-1500-lumens-green-beam.js",
+          "status": 200,
+          "ms": 86,
+          "bytes": 17617
+        },
+        {
+          "t": 1317,
+          "event": "complete",
+          "candidates": 1
+        }
+      ]
+    }
+  },
+  "ab_result": {
+    "ab_mode": "historical_expected_url",
+    "cases": 5,
+    "passed": 5,
+    "pass_rate": 1.0,
+    "pass": true,
+    "results": [
+      {
+        "record_id": "20260515T204320Z-87eb8fa6",
+        "pass": true,
+        "expected_urls": [
+          "https://beachcamera.com/products/lg-38-ultrawide-38wr85qc-w-curved-monitor-with-wqhd-nano-ips-display",
+          "https://beachcamera.com/products/lg-38-ultrawide-38wr85qc-w-curved-monitor-with-wqhd-nano-ips-display-open-box",
+          "https://beachcamera.com/products/lg-38-ultrawide-curved-monitor-with-nano-ips-display-open-box-1-year-warranty",
+          "https://beachcamera.com/products/lg-38wp85c-w-38-curved-21-9-ultrawide-qhd-3840x1600-pc-monitor-open-box"
+        ],
+        "candidate_urls": [
+          "https://beachcamera.com/products/lg-38-ultrawide-38wr85qc-w-curved-monitor-with-wqhd-nano-ips-display",
+          "https://beachcamera.com/products/lg-38-ultrawide-38wr85qc-w-curved-monitor-with-wqhd-nano-ips-display-open-box",
+          "https://beachcamera.com/products/lg-38wp85c-w-38-curved-21-9-ultrawide-qhd-3840x1600-pc-monitor-open-box"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T205007Z-2a09ada7",
+        "pass": true,
+        "expected_urls": [
+          "https://beachcamera.com/products/dji-mini-2-se-foldable-drone-4k-video-quadcopter",
+          "https://beachcamera.com/products/dji-mini-2-se-foldable-drone-video-quadcopter-cp-ma-00000573-01-open-box"
+        ],
+        "candidate_urls": [
+          "https://beachcamera.com/products/dji-mini-2-se-foldable-drone-video-quadcopter-cp-ma-00000573-01-open-box",
+          "https://beachcamera.com/products/dji-mini-2-se-foldable-drone-4k-video-quadcopter"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T205746Z-08731865",
+        "pass": true,
+        "expected_urls": [
+          "https://beachcamera.com/products/cuisinart-77-11g-chefs-classic-stainless-11-piece-cookware-set",
+          "https://beachcamera.com/products/cuisinart-77-11g-chefs-classic-stainless-11-piece-cookware-set-deco-12pcs-knife-set",
+          "https://beachcamera.com/products/cuisinart-77-11g-chefs-classic-stainless-11-piece-cookware-set-open-box"
+        ],
+        "candidate_urls": [
+          "https://beachcamera.com/products/cuisinart-77-11g-chefs-classic-stainless-11-piece-cookware-set",
+          "https://beachcamera.com/products/cuisinart-77-11g-chefs-classic-stainless-11-piece-cookware-set-deco-12pcs-knife-set",
+          "https://beachcamera.com/products/cuisinart-77-11g-chefs-classic-stainless-11-piece-cookware-set-open-box"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T210404Z-ae6c5ded",
+        "pass": true,
+        "expected_urls": [
+          "https://beachcamera.com/products/dji-avata-2-fly-more-combo-three-batteries-cp-fp-00000151-02"
+        ],
+        "candidate_urls": [
+          "https://beachcamera.com/products/dji-avata-2-fly-more-combo-three-batteries-cp-fp-00000151-02",
+          "https://beachcamera.com/products/dji-avata-2-fly-more-combo-3-batteries-fpv-drove-with-camera-4k-open-box",
+          "https://beachcamera.com/products/dji-avata-2-fly-more-combo-3-batteries-fpv-drone-with-128gb-care-bundle",
+          "https://beachcamera.com/products/dji-avata-2-fpv-drone-fly-more-combo-3-batteries-goggles-3-rc-motion-3-bundle",
+          "https://beachcamera.com/products/dji-avata-2-fpv-drone-4k-fly-more-combo-3-batteries-dji-care-refresh-bundle"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T210935Z-7d79681b",
+        "pass": true,
+        "expected_urls": [
+          "https://beachcamera.com/products/cuisinart-12-cup-electric-coffee-grinder-black"
+        ],
+        "candidate_urls": [
+          "https://beachcamera.com/products/cuisinart-12-cup-electric-coffee-grinder-black"
+        ],
+        "tool_success": true,
+        "error": null
+      }
+    ]
+  },
+  "repair_attempts": [],
+  "created_at": "20260515T211347Z"
+}

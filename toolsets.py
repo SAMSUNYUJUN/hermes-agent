@@ -69,7 +69,7 @@ _HERMES_CORE_TOOLS = [
     # Internal TikTok SKU product-detail extraction (gated on Bytedance deps + index module)
     "tiktok_sku_lookup",
     # DTC independent-site exploration learner for TikTok SKU same-product search
-    "dtc_site_search_context", "dtc_site_search_record",
+    "dtc_site_search_context", "dtc_site_search_tool", "dtc_site_search_record",
 ]
 
 
@@ -90,8 +90,8 @@ TOOLSETS = {
     },
 
     "dtc_site_search": {
-        "description": "DTC independent-site exploration recording and site-specific search skill learning",
-        "tools": ["dtc_site_search_context", "dtc_site_search_record"],
+        "description": "DTC independent-site generated search tools, fallback recording, and site-specific search skill learning",
+        "tools": ["dtc_site_search_context", "dtc_site_search_tool", "dtc_site_search_record"],
         "includes": []
     },
     

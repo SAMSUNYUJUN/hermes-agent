@@ -1,0 +1,13 @@
+{
+  "version": "v1778878721964-fc7511aa",
+  "site_url": "https://microingredients.com",
+  "site_key": "microingredients-com-05f171b8850a",
+  "type": "tool",
+  "status": "candidate",
+  "created_at": "20260515T205841Z",
+  "source_records": [
+    "20260515T204847Z-48df920c",
+    "20260515T205648Z-be89c2c3"
+  ],
+  "base_skill_name": "dtc-site-microingredients-com-05f171b8850a"
+}

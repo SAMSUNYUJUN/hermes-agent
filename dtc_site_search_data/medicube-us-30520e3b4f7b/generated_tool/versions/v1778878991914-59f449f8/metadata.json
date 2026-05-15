@@ -1,0 +1,13 @@
+{
+  "version": "v1778878991914-59f449f8",
+  "site_url": "https://medicube.us",
+  "site_key": "medicube-us-30520e3b4f7b",
+  "type": "tool",
+  "status": "candidate",
+  "created_at": "20260515T210311Z",
+  "source_records": [
+    "20260515T205434Z-f8882024",
+    "20260515T210116Z-6426fa90"
+  ],
+  "base_skill_name": "dtc-site-medicube-us-30520e3b4f7b"
+}

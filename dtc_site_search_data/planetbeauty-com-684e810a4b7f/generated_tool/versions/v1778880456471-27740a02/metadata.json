@@ -1,0 +1,13 @@
+{
+  "version": "v1778880456471-27740a02",
+  "site_url": "https://planetbeauty.com",
+  "site_key": "planetbeauty-com-684e810a4b7f",
+  "type": "tool",
+  "status": "candidate",
+  "created_at": "20260515T212736Z",
+  "source_records": [
+    "20260515T211639Z-42cae132",
+    "20260515T212418Z-5408da52"
+  ],
+  "base_skill_name": "dtc-site-planetbeauty-com-684e810a4b7f"
+}

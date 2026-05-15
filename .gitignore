@@ -44,7 +44,15 @@ wandb/
 testlogs
 span.log
 .codex/
-dtc_site_search_data/
+# DTC site-search runtime data is ignored, but generated site tools are source
+# artifacts and should be reviewable/versioned.
+dtc_site_search_data/*
+!dtc_site_search_data/generated_tools_index.json
+!dtc_site_search_data/*/
+dtc_site_search_data/*/*
+!dtc_site_search_data/*/generated_tool/
+!dtc_site_search_data/*/generated_tool/**
+.hermes-node/
 
 # CLI config (may contain sensitive SSH paths)
 cli-config.yaml

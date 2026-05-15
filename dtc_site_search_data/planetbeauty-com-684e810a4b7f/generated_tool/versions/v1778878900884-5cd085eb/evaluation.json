@@ -1,0 +1,202 @@
+{
+  "version": "v1778878900884-5cd085eb",
+  "site_url": "https://planetbeauty.com",
+  "candidate_type": "tool",
+  "status": "ab_failed",
+  "ab_mode": "historical_expected_url",
+  "pass": false,
+  "metrics": {
+    "smoke_success": true,
+    "candidate_count": 1,
+    "historical_cases": 4,
+    "historical_pass_rate": 0.0
+  },
+  "test_result": {
+    "success": true,
+    "output": {
+      "success": true,
+      "candidates": [
+        {
+          "url": "https://www.planetbeauty.com/products/%7B%7B%20product.handle%20%7D%7D",
+          "title": "{{ \"quickView.qvViewFullDetails\" | translate: translations, 'View full details' }}",
+          "brand": "",
+          "price": null,
+          "image": null,
+          "score": 5,
+          "matched_terms": [],
+          "source": [
+            "search_html"
+          ],
+          "evidence_text": "{{ \"quickView.qvViewFullDetails\" | translate: translations, 'View full details' }}"
+        }
+      ],
+      "evidence": {
+        "site": "https://www.planetbeauty.com",
+        "search_query": "self test",
+        "expected_terms": [],
+        "strategy": [
+          "Shopify predictive search JSON endpoint",
+          "Planet Beauty search results HTML fallback",
+          "Shopify /products/{handle}.js enrichment"
+        ],
+        "product_url_pattern": "https://www.planetbeauty.com/products/{product-handle}?variant={variant_id}",
+        "raw_candidate_count": 8,
+        "deduped_candidate_count": 3,
+        "returned_candidate_count": 1,
+        "started_at": "2026-05-15T21:01:41.884Z",
+        "completed_at": "2026-05-15T21:01:43.809Z"
+      },
+      "trace": [
+        {
+          "step": "init",
+          "site_url": "https://planetbeauty.com",
+          "base": "https://www.planetbeauty.com",
+          "query": "self test",
+          "expected_terms": [],
+          "max_candidates": 1,
+          "note": "Planet Beauty skill: use www host, site search, extract /products/{handle} links; no cart/login/forms."
+        },
+        {
+          "step": "predictive_search",
+          "url": "https://www.planetbeauty.com/search/suggest.json?q=self%20test&resources[type]=product&resources[limit]=10&resources[options][unavailable_products]=last&resources[options][fields]=title,product_type,variants.title,vendor",
+          "status": 200,
+          "ok": true,
+          "final_url": "https://www.planetbeauty.com/search/suggest.json?q=self%20test&resources[type]=product&resources[limit]=10&resources[options][unavailable_products]=last&resources[options][fields]=title,product_type,variants.title,vendor"
+        },
+        {
+          "step": "predictive_search_extract",
+          "count": 0
+        },
+        {
+          "step": "predictive_search",
+          "url": "https://www.planetbeauty.com/search/suggest.json?q=self%20test&resources[type]=product&resources[limit]=10",
+          "status": 200,
+          "ok": true,
+          "final_url": "https://www.planetbeauty.com/search/suggest.json?q=self%20test&resources[type]=product&resources[limit]=10"
+        },
+        {
+          "step": "predictive_search_extract",
+          "count": 0
+        },
+        {
+          "step": "search_html",
+          "url": "https://www.planetbeauty.com/search?q=self%20test&type=product",
+          "status": 200,
+          "ok": true,
+          "final_url": "https://www.planetbeauty.com/search?q=self%20test&type=product"
+        },
+        {
+          "step": "search_html_extract",
+          "count": 4,
+          "ld_json_count": 0
+        },
+        {
+          "step": "search_html",
+          "url": "https://www.planetbeauty.com/search?type=product&q=self%20test",
+          "status": 200,
+          "ok": true,
+          "final_url": "https://www.planetbeauty.com/search?type=product&q=self%20test"
+        },
+        {
+          "step": "search_html_extract",
+          "count": 4,
+          "ld_json_count": 0
+        },
+        {
+          "step": "dedupe_before_enrich",
+          "count": 3
+        },
+        {
+          "step": "product_json",
+          "url": "https://www.planetbeauty.com/products/%257B%257B%2520product.handle%2520%257D%257D.js",
+          "status": 404,
+          "ok": false,
+          "final_url": "https://www.planetbeauty.com/products/%257B%257B%2520product.handle%2520%257D%257D.js"
+        },
+        {
+          "step": "product_json",
+          "url": "https://www.planetbeauty.com/products/%257B%257BproductHandle%257D%257D.js",
+          "status": 404,
+          "ok": false,
+          "final_url": "https://www.planetbeauty.com/products/%257B%257BproductHandle%257D%257D.js"
+        },
+        {
+          "step": "product_json",
+          "url": "https://www.planetbeauty.com/products/%257B%257BproductsHandle%257D%257D.js",
+          "status": 404,
+          "ok": false,
+          "final_url": "https://www.planetbeauty.com/products/%257B%257BproductsHandle%257D%257D.js"
+        }
+      ]
+    }
+  },
+  "ab_result": {
+    "ab_mode": "historical_expected_url",
+    "cases": 4,
+    "passed": 0,
+    "pass_rate": 0.0,
+    "pass": false,
+    "results": [
+      {
+        "record_id": "20260515T203712Z-78335565",
+        "pass": false,
+        "expected_urls": [
+          "https://planetbeauty.com/products/ghd-classic-1"
+        ],
+        "candidate_urls": [
+          "https://planetbeauty.com/products/%7B%7BproductHandle%7D%7D",
+          "https://planetbeauty.com/products/%7B%7BproductsHandle%7D%7D",
+          "https://planetbeauty.com/products/%7B%7B%20product.handle%20%7D%7D"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T204522Z-5d3a0869",
+        "pass": false,
+        "expected_urls": [
+          "https://planetbeauty.com/products/zenagen-revolve-for-men-shampoo-treatment",
+          "https://planetbeauty.com/products/zenagen-revolve-mens-hair-loss-shampoo-and-conditioner-duo-16oz"
+        ],
+        "candidate_urls": [
+          "https://planetbeauty.com/products/%7B%7BproductHandle%7D%7D",
+          "https://planetbeauty.com/products/%7B%7B%20product.handle%20%7D%7D",
+          "https://planetbeauty.com/products/%7B%7BproductsHandle%7D%7D"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T205150Z-9c7986b2",
+        "pass": false,
+        "expected_urls": [
+          "https://planetbeauty.com/products/bumble-and-bumble-hairdressers-invisible-oil-primer-demi"
+        ],
+        "candidate_urls": [
+          "https://planetbeauty.com/products/%7B%7BproductHandle%7D%7D",
+          "https://planetbeauty.com/products/%7B%7BproductsHandle%7D%7D",
+          "https://planetbeauty.com/products/%7B%7B%20product.handle%20%7D%7D"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T205914Z-66934eba",
+        "pass": false,
+        "expected_urls": [
+          "https://planetbeauty.com/products/53-value-paul-mitchell-original-awapuhi-and-the-detangler-liter-duo",
+          "https://planetbeauty.com/products/65-value-paul-mitchell-shampoo-one-and-the-conditioner-duo"
+        ],
+        "candidate_urls": [
+          "https://planetbeauty.com/products/%7B%7BproductHandle%7D%7D",
+          "https://planetbeauty.com/products/%7B%7BproductsHandle%7D%7D",
+          "https://planetbeauty.com/products/%7B%7B%20product.handle%20%7D%7D"
+        ],
+        "tool_success": true,
+        "error": null
+      }
+    ]
+  },
+  "repair_attempts": [],
+  "created_at": "20260515T210158Z"
+}

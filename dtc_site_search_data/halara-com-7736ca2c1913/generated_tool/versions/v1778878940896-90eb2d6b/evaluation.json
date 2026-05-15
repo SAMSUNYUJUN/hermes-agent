@@ -1,0 +1,206 @@
+{
+  "version": "v1778878940896-90eb2d6b",
+  "site_url": "https://halara.com",
+  "candidate_type": "tool",
+  "status": "approved",
+  "ab_mode": "historical_expected_url",
+  "pass": true,
+  "metrics": {
+    "smoke_success": true,
+    "candidate_count": 1,
+    "historical_cases": 4,
+    "historical_pass_rate": 1.0
+  },
+  "test_result": {
+    "success": true,
+    "output": {
+      "success": true,
+      "candidates": [
+        {
+          "url": "https://www.halara.com/products/super-high-waisted-back-pocket-2-in-1-side-pocket-yoga-shorts-longer-length?currentSkc=2172163",
+          "title": "SoftlyZero™ Airy Super High Waisted 2-in-1  Cool Touch Yoga Shorts 5'' with Pockets-Longer Length",
+          "score": 2,
+          "matched_terms": [],
+          "price": "29.95",
+          "availability": "InStock",
+          "currentSkc": "2172163",
+          "colors_seen": [
+            "Color"
+          ],
+          "sources": [
+            "collection:/collections/best-sellers"
+          ],
+          "evidence": {
+            "slug": "super-high-waisted-back-pocket-2-in-1-side-pocket-yoga-shorts-longer-length",
+            "jsonld_product": true
+          }
+        }
+      ],
+      "evidence": {
+        "strategy": "Halara skill strategy: avoid direct /search?q as primary route; use relevant collection DOM extraction, lightweight search/suggest APIs, sitemap fallback, then product-page structured data.",
+        "cleaned_query": "self test",
+        "expected_terms": [],
+        "collection_paths_checked": [
+          "/collections/best-sellers",
+          "/collections/new-arrivals"
+        ],
+        "discovered_product_links": 69,
+        "candidates_returned": 1
+      },
+      "trace": [
+        {
+          "t": "2026-05-15T21:02:21.722Z",
+          "step": "start",
+          "site": "https://www.halara.com",
+          "query": "self test",
+          "expected_terms_count": 0,
+          "max_candidates": 1
+        },
+        {
+          "t": "2026-05-15T21:02:22.705Z",
+          "step": "fetch",
+          "label": "collection:/collections/best-sellers",
+          "url": "https://www.halara.com/collections/best-sellers",
+          "status": 200,
+          "bytes": 1255962,
+          "ms": 955
+        },
+        {
+          "t": "2026-05-15T21:02:23.205Z",
+          "step": "fetch",
+          "label": "collection:/collections/new-arrivals",
+          "url": "https://www.halara.com/collections/new-arrivals",
+          "status": 200,
+          "bytes": 853255,
+          "ms": 488
+        },
+        {
+          "t": "2026-05-15T21:02:23.428Z",
+          "step": "fetch",
+          "label": "search-api",
+          "url": "https://www.halara.com/search/suggest.json?q=self%20test&resources[type]=product&resources[limit]=20",
+          "status": 404,
+          "bytes": 300211,
+          "ms": 216
+        },
+        {
+          "t": "2026-05-15T21:02:23.705Z",
+          "step": "fetch",
+          "label": "search-api",
+          "url": "https://www.halara.com/api/search?keyword=self%20test",
+          "status": 404,
+          "bytes": 300211,
+          "ms": 277
+        },
+        {
+          "t": "2026-05-15T21:02:23.896Z",
+          "step": "fetch",
+          "label": "search-api",
+          "url": "https://www.halara.com/api/search?q=self%20test",
+          "status": 404,
+          "bytes": 300211,
+          "ms": 191
+        },
+        {
+          "t": "2026-05-15T21:02:24.029Z",
+          "step": "fetch",
+          "label": "search-api",
+          "url": "https://www.halara.com/api/product/search?keyword=self%20test",
+          "status": 404,
+          "bytes": 300211,
+          "ms": 133
+        },
+        {
+          "t": "2026-05-15T21:02:24.032Z",
+          "step": "scored_candidates",
+          "discovered": 69,
+          "scored": 2
+        },
+        {
+          "t": "2026-05-15T21:02:24.379Z",
+          "step": "fetch",
+          "label": "product-detail",
+          "url": "https://www.halara.com/products/super-high-waisted-back-pocket-2-in-1-side-pocket-yoga-shorts-longer-length?currentSkc=2172163",
+          "status": 200,
+          "bytes": 663680,
+          "ms": 347
+        }
+      ]
+    }
+  },
+  "ab_result": {
+    "ab_mode": "historical_expected_url",
+    "cases": 4,
+    "passed": 4,
+    "pass_rate": 1.0,
+    "pass": true,
+    "results": [
+      {
+        "record_id": "20260515T203751Z-090f3d78",
+        "pass": true,
+        "expected_urls": [
+          "https://halara.com/products/Softlyzero-Airy-Super-High-Waisted-2-in-1-Cool-Touch-Yoga-Shorts-7-with-Pockets-10-807"
+        ],
+        "candidate_urls": [
+          "https://halara.com/products/super-high-waisted-back-pocket-2-in-1-side-pocket-yoga-shorts-longer-length",
+          "https://halara.com/products/Softlyzero-Airy-Super-High-Waisted-2-in-1-Cool-Touch-Yoga-Shorts-7-with-Pockets-10-807",
+          "https://halara.com/products/softlyzero-airy-super-high-waisted-2-in-1-cool-touch-yoga-shorts-9-with-pockets-10-978",
+          "https://halara.com/products/in-my-feels-waistband-pocket-2-in-1-shorts",
+          "https://halara.com/products/softlyzero-airy-high-waisted-ruched-cool-touch-yoga-shorts-3-with-pockets-10-194"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T204509Z-1ad9ae08",
+        "pass": true,
+        "expected_urls": [
+          "https://halara.com/products/Softlyzero-Airy-Backless-Crisscross-U-Neck-2-in-1-Side-Pocket-Mini-Cool-Touch-Dance-Active-Dress-Easy-Peezy-10-469"
+        ],
+        "candidate_urls": [
+          "https://halara.com/products/Softlyzero-Airy-Backless-Crisscross-U-Neck-2-in-1-Side-Pocket-Mini-Cool-Touch-Dance-Active-Dress-Easy-Peezy-10-469",
+          "https://halara.com/products/Softlyzero-Airy-Backless-Crisscross-U-Neck-2-in-1-Side-Pocket-Mini-Cool-Touch-Dance-Active-Dress-Easy-Peezy-10-469",
+          "https://halara.com/products/Softlyzero-Airy-Backless-Crisscross-U-Neck-2-in-1-Side-Pocket-Mini-Cool-Touch-Dance-Active-Dress-Easy-Peezy-10-469",
+          "https://halara.com/products/u-neck-backless-twisted-cut-out-2-in-1-side-pocket-mini-dance-dress-longer-length-easy-peezy",
+          "https://halara.com/products/everyday-cloudful%E2%84%A2-backless-2-in-1-flare-workout-dress-wannabe-easy-peezy"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T205220Z-80f63ccf",
+        "pass": true,
+        "expected_urls": [
+          "https://halara.com/products/super-high-waisted-back-pocket-2-in-1-side-pocket-yoga-shorts-longer-length"
+        ],
+        "candidate_urls": [
+          "https://halara.com/products/super-high-waisted-back-pocket-2-in-1-side-pocket-yoga-shorts-longer-length",
+          "https://halara.com/products/Softlyzero-Airy-Super-High-Waisted-2-in-1-Cool-Touch-Yoga-Shorts-7-with-Pockets-10-807",
+          "https://halara.com/products/softlyzero-airy-super-high-waisted-2-in-1-cool-touch-yoga-shorts-9-with-pockets-10-978",
+          "https://halara.com/products/in-my-feels-waistband-pocket-2-in-1-shorts",
+          "https://halara.com/products/softlyzero-airy-crossover-high-waisted-2-in-1-cool-touch-yoga-shorts-with-pockets-10-967"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T205927Z-62ed3ada",
+        "pass": true,
+        "expected_urls": [
+          "https://halara.com/products/SoCinched-High-Waisted-Butt-Lifting-Tummy-Control-Side-Pocket-Shaping-Workout-UltraSculpt-Leggings-10-556"
+        ],
+        "candidate_urls": [
+          "https://halara.com/products/SoCinched-High-Waisted-Butt-Lifting-Tummy-Control-Side-Pocket-Shaping-Workout-UltraSculpt-Leggings-10-556",
+          "https://halara.com/products/socinched-high-waisted-butt-lifting-tummy-control-side-pocket-shaping-training-ultrasculpt-leggings",
+          "https://halara.com/products/SoCinched-High-Waisted-Butt-Lifting-Tummy-Control-Side-Pocket-Shaping-Yoga-UltraSculpt-Bootcut-Leggings-10-771",
+          "https://halara.com/products/SoCinched-High-Waisted-Butt-Lifting-Tummy-Control-Side-Pocket-Shaping-Capri-Training-UltraSculpt-Leggings-10-660",
+          "https://halara.com/products/halara-ultrasculpt-high-waisted-scrunch-butt-lifting-tummy-control-shaping-yoga-flare-leggings-with-pockets-10-200"
+        ],
+        "tool_success": true,
+        "error": null
+      }
+    ]
+  },
+  "repair_attempts": [],
+  "created_at": "20260515T210243Z"
+}

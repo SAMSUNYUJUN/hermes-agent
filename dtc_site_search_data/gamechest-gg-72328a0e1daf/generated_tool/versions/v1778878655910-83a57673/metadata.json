@@ -1,0 +1,13 @@
+{
+  "version": "v1778878655910-83a57673",
+  "site_url": "https://gamechest.gg",
+  "site_key": "gamechest-gg-72328a0e1daf",
+  "type": "tool",
+  "status": "candidate",
+  "created_at": "20260515T205735Z",
+  "source_records": [
+    "20260515T204720Z-a74b1cf3",
+    "20260515T205518Z-e2b9197f"
+  ],
+  "base_skill_name": "dtc-site-gamechest-gg-72328a0e1daf"
+}

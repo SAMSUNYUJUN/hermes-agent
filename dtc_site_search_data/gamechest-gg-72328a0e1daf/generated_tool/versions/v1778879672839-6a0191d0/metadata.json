@@ -1,0 +1,10 @@
+{
+  "version": "v1778879672839-6a0191d0",
+  "site_url": "https://gamechest.gg",
+  "site_key": "gamechest-gg-72328a0e1daf",
+  "type": "tool_repair",
+  "status": "candidate",
+  "created_at": "20260515T211432Z",
+  "base_tool_path": "/mnt/bn/zhangwendong-nas06/YujunSun/hermes-agent/dtc_site_search_data/gamechest-gg-72328a0e1daf/generated_tool/versions/v1778878655910-83a57673/site_search_tool.mjs",
+  "failure_count": 1
+}

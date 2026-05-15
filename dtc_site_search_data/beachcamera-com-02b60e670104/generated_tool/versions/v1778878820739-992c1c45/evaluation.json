@@ -1,0 +1,189 @@
+{
+  "version": "v1778878820739-992c1c45",
+  "site_url": "https://beachcamera.com",
+  "candidate_type": "tool",
+  "status": "ab_failed",
+  "ab_mode": "historical_expected_url",
+  "pass": false,
+  "metrics": {
+    "smoke_success": true,
+    "candidate_count": 1,
+    "historical_cases": 4,
+    "historical_pass_rate": 0.0
+  },
+  "test_result": {
+    "success": true,
+    "output": {
+      "success": true,
+      "candidates": [
+        {
+          "title": "General For TESTING PURPOSES - DO NOT BUY",
+          "url": "https://www.beachcamera.com/products/general-for-testing-purposes-do-not-buy",
+          "brand": "General",
+          "availability": "available",
+          "image": "https://www.beachcamera.com/cdn/shop/files/890199_1.jpg?crop=center&height=375&v=1753032165&width=375",
+          "sku": "RYANTEST2",
+          "score": 22,
+          "evidence": {
+            "source": "search_html",
+            "matched_url_in_search_results": true,
+            "search_result_text": "G USB Pro Flight Rudder Pedals - 945-000024 $198.00 / Add to cart View details Compare General General For TESTING PURPOSES - DO NOT BUY $1.23 / Add to cart View details <input type=\"checkbox\" class=\"checkbox product-card-compare--checkbox\" id=\"compare-15309802",
+            "product_json_checked": true,
+            "skus": [
+              "RYANTEST2"
+            ]
+          }
+        }
+      ],
+      "evidence": {
+        "site_url_input": "https://beachcamera.com",
+        "canonical_site_url": "https://www.beachcamera.com",
+        "query": "self test",
+        "expected_terms": [],
+        "search_url": "https://www.beachcamera.com/search?q=self+test",
+        "suggest_url": "https://www.beachcamera.com/search/suggest.json?q=self+test&resources%5Btype%5D=product&resources%5Blimit%5D=10",
+        "search_status": 200,
+        "final_search_url": "https://www.beachcamera.com/search?q=self+test",
+        "search_content_type": "text/html; charset=utf-8",
+        "suggest_status": 200,
+        "candidate_count_before_limit": 12,
+        "candidate_count": 1
+      },
+      "trace": [
+        {
+          "step": "fetch_search_html",
+          "url": "https://www.beachcamera.com/search?q=self+test"
+        },
+        {
+          "step": "fetch_search_html",
+          "status": 200,
+          "ok": true,
+          "bytes": 418117
+        },
+        {
+          "step": "parse_search_html",
+          "product_links": 12
+        },
+        {
+          "step": "fetch_search_suggest_json",
+          "url": "https://www.beachcamera.com/search/suggest.json?q=self+test&resources%5Btype%5D=product&resources%5Blimit%5D=10"
+        },
+        {
+          "step": "fetch_search_suggest_json",
+          "status": 200,
+          "ok": true,
+          "bytes": 41
+        },
+        {
+          "step": "parse_search_suggest_json",
+          "product_links": 0
+        },
+        {
+          "step": "fetch_product_json",
+          "url": "https://www.beachcamera.com/products/general-for-testing-purposes-do-not-buy.js",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "step": "fetch_product_json",
+          "url": "https://www.beachcamera.com/products/logitech-core-pc-pro-flight-rudder-pedals.js",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "step": "fetch_product_json",
+          "url": "https://www.beachcamera.com/products/olight-odin-gl-m-rechargeable-rail-mounted-tactical-light-1500-lumens-green-beam.js",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "step": "fetch_product_json",
+          "url": "https://www.beachcamera.com/products/asus-micro-atx-b760-business-motherboard-prob760m-ct-csm.js",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "step": "fetch_product_json",
+          "url": "https://www.beachcamera.com/products/olight-arkpro-ultra-class-3r-onyx-black.js",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "step": "fetch_product_json",
+          "url": "https://www.beachcamera.com/products/canon-eos-rebel-t7-dslr-camera-18-55mm-f-3-5-5-6-is-ii-kit-with-3-year-warranty.js",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "step": "fetch_product_json",
+          "url": "https://www.beachcamera.com/products/canon-eos-rebel-t7-dslr-camera-with-18-55mm-f-3-5-5-6-is-ii-lens-kit-backpack-bundle.js",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "step": "fetch_product_json",
+          "url": "https://www.beachcamera.com/products/canon-eos-rebel-t7-dslr-camera-with-ef18-55mm-ef-75-300mm-double-zoom-kit.js",
+          "status": 200,
+          "ok": true
+        }
+      ]
+    }
+  },
+  "ab_result": {
+    "ab_mode": "historical_expected_url",
+    "cases": 4,
+    "passed": 0,
+    "pass_rate": 0.0,
+    "pass": false,
+    "results": [
+      {
+        "record_id": "20260515T203511Z-53f02243",
+        "pass": false,
+        "expected_urls": [
+          "https://beachcamera.com/products/fujifilm-instax-mini-twin-pack-picture-format-instant-daylight-film-20-shots-16437396"
+        ],
+        "candidate_urls": [],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T204320Z-87eb8fa6",
+        "pass": false,
+        "expected_urls": [
+          "https://beachcamera.com/products/lg-38-ultrawide-38wr85qc-w-curved-monitor-with-wqhd-nano-ips-display",
+          "https://beachcamera.com/products/lg-38-ultrawide-38wr85qc-w-curved-monitor-with-wqhd-nano-ips-display-open-box",
+          "https://beachcamera.com/products/lg-38-ultrawide-curved-monitor-with-nano-ips-display-open-box-1-year-warranty",
+          "https://beachcamera.com/products/lg-38wp85c-w-38-curved-21-9-ultrawide-qhd-3840x1600-pc-monitor-open-box"
+        ],
+        "candidate_urls": [],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T205007Z-2a09ada7",
+        "pass": false,
+        "expected_urls": [
+          "https://beachcamera.com/products/dji-mini-2-se-foldable-drone-4k-video-quadcopter",
+          "https://beachcamera.com/products/dji-mini-2-se-foldable-drone-video-quadcopter-cp-ma-00000573-01-open-box"
+        ],
+        "candidate_urls": [],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T205746Z-08731865",
+        "pass": false,
+        "expected_urls": [
+          "https://beachcamera.com/products/cuisinart-77-11g-chefs-classic-stainless-11-piece-cookware-set",
+          "https://beachcamera.com/products/cuisinart-77-11g-chefs-classic-stainless-11-piece-cookware-set-deco-12pcs-knife-set",
+          "https://beachcamera.com/products/cuisinart-77-11g-chefs-classic-stainless-11-piece-cookware-set-open-box"
+        ],
+        "candidate_urls": [],
+        "tool_success": true,
+        "error": null
+      }
+    ]
+  },
+  "repair_attempts": [],
+  "created_at": "20260515T210035Z"
+}

@@ -1,0 +1,137 @@
+{
+  "version": "v1778878655910-83a57673",
+  "site_url": "https://gamechest.gg",
+  "candidate_type": "tool",
+  "status": "approved",
+  "ab_mode": "historical_expected_url",
+  "pass": true,
+  "metrics": {
+    "smoke_success": true,
+    "candidate_count": 0,
+    "historical_cases": 2,
+    "historical_pass_rate": 1.0
+  },
+  "test_result": {
+    "success": true,
+    "output": {
+      "success": true,
+      "candidates": [],
+      "evidence": {
+        "site_url": "https://gamechest.gg",
+        "canonical_site_url": "https://www.gamechest.gg",
+        "strategy": "Shopify catalog JSON enumeration, with backup all-products endpoint if needed and predictive search confirmation when no catalog match is found.",
+        "searched_fields": [
+          "title",
+          "handle",
+          "vendor",
+          "product_type",
+          "tags",
+          "variants"
+        ],
+        "query": "self test",
+        "expected_terms": [],
+        "normalized_phrases": [
+          "self test"
+        ],
+        "normalized_tokens": [
+          "self",
+          "test"
+        ],
+        "catalog_counts": {
+          "https://www.gamechest.gg/products.json?limit=250": 88
+        },
+        "endpoint_errors": [],
+        "catalog_products_enumerated": 88,
+        "catalog_matches": 0,
+        "predictive_search_queries": [
+          "self test"
+        ],
+        "predictive_matches": 0
+      },
+      "trace": [
+        {
+          "at": "2026-05-15T20:57:36.776Z",
+          "action": "start",
+          "site_url": "https://gamechest.gg",
+          "query": "self test",
+          "max_candidates": 1
+        },
+        {
+          "at": "2026-05-15T20:57:37.144Z",
+          "action": "fetch_json",
+          "url": "https://www.gamechest.gg/products.json?limit=250",
+          "status": 200,
+          "ok": true,
+          "ms": 340,
+          "bytes": 257915,
+          "parse_ok": true
+        },
+        {
+          "at": "2026-05-15T20:57:37.284Z",
+          "action": "fetch_json",
+          "url": "https://www.gamechest.gg/search/suggest.json?q=self%20test&resources[type]=product&resources[limit]=10",
+          "status": 200,
+          "ok": true,
+          "ms": 137,
+          "bytes": 41,
+          "parse_ok": true
+        },
+        {
+          "at": "2026-05-15T20:57:37.284Z",
+          "action": "predictive_search_results",
+          "query": "self test",
+          "count": 0
+        },
+        {
+          "at": "2026-05-15T20:57:37.284Z",
+          "action": "complete",
+          "candidates": 0
+        }
+      ]
+    }
+  },
+  "ab_result": {
+    "ab_mode": "historical_expected_url",
+    "cases": 2,
+    "passed": 2,
+    "pass_rate": 1.0,
+    "pass": true,
+    "results": [
+      {
+        "record_id": "20260515T204720Z-a74b1cf3",
+        "pass": true,
+        "expected_urls": [
+          "https://gamechest.gg/products/collective-minds-cronus-zen-controller-emulator-for-xbox-one-xbox-series-s-x-playstation-4-playstation-5-nintendo-switch-1-2-pc-black"
+        ],
+        "candidate_urls": [
+          "https://gamechest.gg/products/collective-minds-cronus-zen-controller-emulator-for-xbox-one-xbox-series-s-x-playstation-4-playstation-5-nintendo-switch-1-2-pc-black",
+          "https://gamechest.gg/products/xbox-elite-series-2-wireless-gaming-controller-black-xbox-series-x-s-xbox-one-windows-pc-android-and-ios",
+          "https://gamechest.gg/products/family-computer-controller-for-nintendo-switch",
+          "https://gamechest.gg/products/nintendo-switch-pro-controller-splatoon-2-edition-nintendo-switch",
+          "https://gamechest.gg/products/nintendo-switch-pro-controller-splatoon-3-edition-nintendo-switch"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T205518Z-e2b9197f",
+        "pass": true,
+        "expected_urls": [
+          "https://gamechest.gg/products/the-legend-of-zelda-breath-of-the-wild-region-free",
+          "https://gamechest.gg/products/the-legend-of-zelda-breath-of-the-wild-region-free-1"
+        ],
+        "candidate_urls": [
+          "https://gamechest.gg/products/the-legend-of-zelda-breath-of-the-wild-region-free",
+          "https://gamechest.gg/products/the-legend-of-zelda-breath-of-the-wild-region-free-1",
+          "https://gamechest.gg/products/the-legend-of-zelda-echoes-of-wisdom-nintendo-switch-region-free",
+          "https://gamechest.gg/products/legend-of-zelda-links-awakening-region-free",
+          "https://gamechest.gg/products/the-legend-of-zelda-echoes-of-wisdom-region-free"
+        ],
+        "tool_success": true,
+        "error": null
+      }
+    ]
+  },
+  "repair_attempts": [],
+  "created_at": "20260515T205743Z"
+}

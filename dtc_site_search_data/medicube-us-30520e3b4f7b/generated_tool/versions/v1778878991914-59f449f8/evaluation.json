@@ -1,0 +1,270 @@
+{
+  "version": "v1778878991914-59f449f8",
+  "site_url": "https://medicube.us",
+  "candidate_type": "tool",
+  "status": "approved",
+  "ab_mode": "historical_expected_url",
+  "pass": true,
+  "metrics": {
+    "smoke_success": true,
+    "candidate_count": 1,
+    "historical_cases": 5,
+    "historical_pass_rate": 1.0
+  },
+  "test_result": {
+    "success": true,
+    "output": {
+      "success": true,
+      "candidates": [
+        {
+          "url": "https://medicube.us/products/collagen-niacinamide-jelly-cream",
+          "verification_url": "https://medicube.us/products/collagen-niacinamide-jelly-cream.js",
+          "title": "Collagen Niacinamide Jelly Cream",
+          "handle": "collagen-niacinamide-jelly-cream",
+          "score": 13,
+          "matched_terms": [
+            "self",
+            "test"
+          ],
+          "clone": false,
+          "product_type": "GLASS GLOW LINE - Firming",
+          "tags": [
+            "__label6:BEST",
+            "ALL",
+            "beauty",
+            "BESTSELLERS",
+            "MICHELLE",
+            "moisturizers",
+            "PRODUCTS",
+            "tati"
+          ],
+          "variants": [
+            {
+              "title": "110ml",
+              "sku": "PMEUS10003A00",
+              "available": true
+            },
+            {
+              "title": "50ml",
+              "sku": "PMEUS10010A00",
+              "available": true
+            },
+            {
+              "title": "110ml 2 PACK(+GIFT)",
+              "sku": "KUSMEA1367",
+              "available": true
+            }
+          ],
+          "verified": {
+            "id": 7253299167280,
+            "title": "Collagen Niacinamide Jelly Cream",
+            "handle": "collagen-niacinamide-jelly-cream",
+            "type": "GLASS GLOW LINE - Firming",
+            "vendor": "SHOPIFY_ME",
+            "available": true,
+            "tags": [
+              "__label6:BEST",
+              "ALL",
+              "beauty",
+              "BESTSELLERS",
+              "MICHELLE",
+              "moisturizers",
+              "PRODUCTS",
+              "tati"
+            ],
+            "variants": [
+              {
+                "id": 40889653493808,
+                "title": "110ml",
+                "option1": "110ml",
+                "option2": null,
+                "option3": null,
+                "available": true,
+                "sku": "PMEUS10003A00"
+              },
+              {
+                "id": 41696951074864,
+                "title": "50ml",
+                "option1": "50ml",
+                "option2": null,
+                "option3": null,
+                "available": true,
+                "sku": "PMEUS10010A00"
+              },
+              {
+                "id": 40905204564016,
+                "title": "110ml 2 PACK(+GIFT)",
+                "option1": "110ml 2 PACK(+GIFT)",
+                "option2": null,
+                "option3": null,
+                "available": true,
+                "sku": "KUSMEA1367"
+              }
+            ]
+          },
+          "verification_error": null
+        }
+      ],
+      "evidence": {
+        "strategy": "shopify_catalog_json_then_product_js_verification",
+        "catalog_endpoint_pattern": "https://medicube.us/products.json?limit=250&page=N",
+        "verification_endpoint_pattern": "https://medicube.us/products/{handle}.js",
+        "query_terms": [
+          "self",
+          "test"
+        ],
+        "products_seen": 383,
+        "clone_policy": "subscription/gift/free-gift listings are penalized and excluded when normal retail matches exist"
+      },
+      "trace": [
+        {
+          "step": "input",
+          "site_url": "https://medicube.us",
+          "query": "self test",
+          "expected_terms_count": 0,
+          "max_candidates": 1,
+          "token_count": 2
+        },
+        {
+          "step": "fetch_catalog_page_start",
+          "page": 1,
+          "url": "https://medicube.us/products.json?limit=250&page=1"
+        },
+        {
+          "step": "fetch_catalog_page_done",
+          "page": 1,
+          "count": 250
+        },
+        {
+          "step": "fetch_catalog_page_start",
+          "page": 2,
+          "url": "https://medicube.us/products.json?limit=250&page=2"
+        },
+        {
+          "step": "fetch_catalog_page_done",
+          "page": 2,
+          "count": 133
+        },
+        {
+          "step": "catalog_complete",
+          "total_products": 383
+        },
+        {
+          "step": "filter_and_rank",
+          "scored_count": 83,
+          "non_clone_count": 81,
+          "selected_count": 1
+        },
+        {
+          "step": "verify_product_start",
+          "handle": "collagen-niacinamide-jelly-cream",
+          "url": "https://medicube.us/products/collagen-niacinamide-jelly-cream.js"
+        },
+        {
+          "step": "verify_product_done",
+          "handle": "collagen-niacinamide-jelly-cream",
+          "ok": true
+        }
+      ]
+    }
+  },
+  "ab_result": {
+    "ab_mode": "historical_expected_url",
+    "cases": 5,
+    "passed": 5,
+    "pass_rate": 1.0,
+    "pass": true,
+    "results": [
+      {
+        "record_id": "20260515T203208Z-d7bf095d",
+        "pass": true,
+        "expected_urls": [
+          "https://medicube.us/products/pdrn-pink-collagen-capsule-cream",
+          "https://medicube.us/products/pdrn-pink-glow-home-aesthetic-full-set",
+          "https://medicube.us/products/pink-gold-ultimate-care-set",
+          "https://medicube.us/products/subscr-pdrn-pink-collagen-capsule-cream"
+        ],
+        "candidate_urls": [
+          "https://medicube.us/products/pdrn-pink-collagen-capsule-cream",
+          "https://medicube.us/products/pdrn-pink-glow-home-aesthetic-full-set",
+          "https://medicube.us/products/pdrn-pink-collagen-exosome-shot",
+          "https://medicube.us/products/pdrn-pink-collagen-glow-jelly-serum",
+          "https://medicube.us/products/pdrn-jelly-mist"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T204049Z-cbd3d886",
+        "pass": true,
+        "expected_urls": [
+          "https://medicube.us/products/pdrn-gel-cleanser",
+          "https://medicube.us/products/zero-pore-blackhead-deep-cleansing-oil"
+        ],
+        "candidate_urls": [
+          "https://medicube.us/products/zero-pore-blackhead-deep-cleansing-oil",
+          "https://medicube.us/products/zero-pore-clear-blue-capsule-facial-deep-cleanser",
+          "https://medicube.us/products/zero-foam-cleanser",
+          "https://medicube.us/products/pdrn-pink-glow-home-aesthetic-full-set",
+          "https://medicube.us/products/red-foam-cleanser-120-ml"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T204643Z-664fbe53",
+        "pass": true,
+        "expected_urls": [
+          "https://medicube.us/products/pdrn-pink-collagen-gel-toner-pad"
+        ],
+        "candidate_urls": [
+          "https://medicube.us/products/pdrn-pink-collagen-gel-toner-pad",
+          "https://medicube.us/products/pdrn-pink-collagen-gel-mask",
+          "https://medicube.us/products/pdrn-pink-collagen-glow-jelly-serum",
+          "https://medicube.us/products/pdrn-jelly-mist",
+          "https://medicube.us/products/pdrn-pink-glow-home-aesthetic-full-set"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T205434Z-f8882024",
+        "pass": true,
+        "expected_urls": [
+          "https://medicube.us/products/gift-kojic-acid-turmeric-overnight-wrapping-mask",
+          "https://medicube.us/products/kojic-acid-tumeric-overnight-wrapping-mask",
+          "https://medicube.us/products/subscr-kojic-acid-turmeric-overnight-wrapping-mask"
+        ],
+        "candidate_urls": [
+          "https://medicube.us/products/kojic-acid-tumeric-overnight-wrapping-mask",
+          "https://medicube.us/products/collagen-night-wrapping-mask",
+          "https://medicube.us/products/pdrn-wrapping-mask",
+          "https://medicube.us/products/kojic-acid-turmeric-gold-jelly-gel-mask",
+          "https://medicube.us/products/pink-gold-ultimate-care-set"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T210116Z-6426fa90",
+        "pass": true,
+        "expected_urls": [
+          "https://medicube.us/products/kojic-acid-turmeric-body-peel-shot",
+          "https://medicube.us/products/kojic-acid-turmeric-brightening-body-wash",
+          "https://medicube.us/products/turmeric-vitamin-gold-jelly-mist-serum"
+        ],
+        "candidate_urls": [
+          "https://medicube.us/products/kojic-acid-turmeric-body-peel-shot",
+          "https://medicube.us/products/kojic-acid-turmeric-brightening-body-wash",
+          "https://medicube.us/products/turmeric-vitamin-gold-jelly-mist-serum",
+          "https://medicube.us/products/kojic-acid-turmeric-peel-shot",
+          "https://medicube.us/products/kojic-acid-turmeric-vita-capsule-cream"
+        ],
+        "tool_success": true,
+        "error": null
+      }
+    ]
+  },
+  "repair_attempts": [],
+  "created_at": "20260515T210323Z"
+}

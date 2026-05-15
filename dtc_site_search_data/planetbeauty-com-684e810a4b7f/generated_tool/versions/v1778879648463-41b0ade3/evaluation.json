@@ -1,0 +1,224 @@
+{
+  "version": "v1778879648463-41b0ade3",
+  "site_url": "https://planetbeauty.com",
+  "candidate_type": "tool",
+  "status": "ab_failed",
+  "ab_mode": "historical_expected_url",
+  "pass": false,
+  "metrics": {
+    "smoke_success": true,
+    "candidate_count": 1,
+    "historical_cases": 5,
+    "historical_pass_rate": 0.8
+  },
+  "test_result": {
+    "success": true,
+    "output": {
+      "success": true,
+      "candidates": [
+        {
+          "url": "https://www.planetbeauty.com/products/caudalie-self-tan-sun-drops?variant=44928501252246",
+          "base_url": "https://www.planetbeauty.com/products/caudalie-self-tan-sun-drops",
+          "title": "Caudalie Self-Tan Sun Drops",
+          "brand": "CAUDALIE",
+          "handle": "caudalie-self-tan-sun-drops",
+          "variant_id": "44928501252246",
+          "variant_title": "15ML",
+          "price": "$29.00",
+          "available": true,
+          "image": "https://cdn.shopify.com/s/files/1/0568/4484/5206/files/caudaliesundrops.png?v=1746564149",
+          "score": 2.75,
+          "matched_terms": [
+            "self"
+          ],
+          "sources": [
+            "predictive:self"
+          ]
+        }
+      ],
+      "evidence": {
+        "site_url": "https://planetbeauty.com",
+        "normalized_site_url": "https://www.planetbeauty.com",
+        "strategy": "Planet Beauty Shopify search: predictive JSON first, then product-only HTML search; product pages under /products/{handle}.",
+        "queries": [
+          "self test",
+          "self"
+        ],
+        "search_results": [
+          {
+            "query": "self test",
+            "endpoint": "search/suggest.json",
+            "count": 0
+          },
+          {
+            "query": "self test",
+            "endpoint": "search html",
+            "count": 9
+          },
+          {
+            "query": "self",
+            "endpoint": "search/suggest.json",
+            "count": 10
+          }
+        ],
+        "candidate_count": 1
+      },
+      "trace": [
+        {
+          "step": "predictive_search",
+          "query": "self test",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "step": "html_search",
+          "query": "self test",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "step": "predictive_search",
+          "query": "self",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "step": "product_json",
+          "url": "https://www.planetbeauty.com/products/caudalie-self-tan-sun-drops.js",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "step": "product_json",
+          "url": "https://www.planetbeauty.com/products/dr-dennis-gross-alpha-beta-glow-pad-self-tanner-for-body.js",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "step": "product_json",
+          "url": "https://www.planetbeauty.com/products/dr-dennis-gross-alpha-beta%25C2%25AE-glow-pad-self-tanner-for-face.js",
+          "status": 404,
+          "ok": false
+        },
+        {
+          "step": "product_html",
+          "url": "https://www.planetbeauty.com/products/dr-dennis-gross-alpha-beta%C2%AE-glow-pad-self-tanner-for-face",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "step": "product_json",
+          "url": "https://www.planetbeauty.com/products/minetan-medium-dark-self-tan-foam.js",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "step": "product_json",
+          "url": "https://www.planetbeauty.com/products/minetan-moroccan-self-tan-foam.js",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "step": "product_json",
+          "url": "https://www.planetbeauty.com/products/minetan-perfect-bronze-self-tanning-kit.js",
+          "status": 200,
+          "ok": true
+        }
+      ]
+    }
+  },
+  "ab_result": {
+    "ab_mode": "historical_expected_url",
+    "cases": 5,
+    "passed": 4,
+    "pass_rate": 0.8,
+    "pass": false,
+    "results": [
+      {
+        "record_id": "20260515T204522Z-5d3a0869",
+        "pass": true,
+        "expected_urls": [
+          "https://planetbeauty.com/products/zenagen-revolve-for-men-shampoo-treatment",
+          "https://planetbeauty.com/products/zenagen-revolve-mens-hair-loss-shampoo-and-conditioner-duo-16oz"
+        ],
+        "candidate_urls": [
+          "https://planetbeauty.com/products/zenagen-revolve-mens-hair-loss-shampoo-and-conditioner-duo-16oz",
+          "https://planetbeauty.com/products/zenagen-revolve-womens-hair-loss-shampoo-and-conditioner-duo-16oz",
+          "https://planetbeauty.com/products/zenagen-revolve-for-men-shampoo-treatment",
+          "https://planetbeauty.com/products/zenagen-revolve-for-women-shampoo-treatment",
+          "https://planetbeauty.com/products/zenagen-revolve-conditioner"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T205150Z-9c7986b2",
+        "pass": true,
+        "expected_urls": [
+          "https://planetbeauty.com/products/bumble-and-bumble-hairdressers-invisible-oil-primer-demi"
+        ],
+        "candidate_urls": [
+          "https://planetbeauty.com/products/bumble-and-bumble-hairdressers-invisible-oil-primer-demi",
+          "https://planetbeauty.com/products/bumble-and-bumble-hairdressers-invisible-oil-conditioner",
+          "https://planetbeauty.com/products/bumble-and-bumble-hairdressers-invisible-oil-heat-uv-protective-primer",
+          "https://planetbeauty.com/products/bumble-and-bumble-hairdressers-invisible-oil-mask",
+          "https://planetbeauty.com/products/bumble-and-bumble-hairdressers-invisible-oil-shampoo-8oz-and-conditioner-6-7oz-duo"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T205914Z-66934eba",
+        "pass": true,
+        "expected_urls": [
+          "https://planetbeauty.com/products/53-value-paul-mitchell-original-awapuhi-and-the-detangler-liter-duo",
+          "https://planetbeauty.com/products/65-value-paul-mitchell-shampoo-one-and-the-conditioner-duo"
+        ],
+        "candidate_urls": [
+          "https://planetbeauty.com/products/81-50-value-paul-mitchell-tea-tree-scalp-care-anti-thinning-shampoo-conditioner-liter-duo-1",
+          "https://planetbeauty.com/products/65-value-paul-mitchell-shampoo-one-and-the-conditioner-duo",
+          "https://planetbeauty.com/products/81-50-value-paul-mitchell-tea-tree-lavender-mint-shampoo-conditioner-duo-liter-discounts-dont-apply-to-this-item",
+          "https://planetbeauty.com/products/paul-mitchell-single-liter-pump-white-bottles-only",
+          "https://planetbeauty.com/products/paul-mitchell-tea-tree-conditioner-33oz"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T210543Z-598dd723",
+        "pass": true,
+        "expected_urls": [
+          "https://planetbeauty.com/products/cotzface-prime-and-protect-spf40-non-tinted"
+        ],
+        "candidate_urls": [
+          "https://planetbeauty.com/products/cotzface-prime-and-protect-spf40-non-tinted",
+          "https://planetbeauty.com/products/cotzface-prime-and-protect-spf40-tinted",
+          "https://planetbeauty.com/products/cotzbaby-spf-40",
+          "https://planetbeauty.com/products/cotzsensitive-spf-40",
+          "https://planetbeauty.com/products/cotz-silky-foam-tinted-spf-30"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T211102Z-692138cb",
+        "pass": false,
+        "expected_urls": [
+          "https://planetbeauty.com/products/davines-oi-oil-absolute-beautifying-potion-1-69oz",
+          "https://planetbeauty.com/products/davines-oi-oil-absolute-beautifying-potion-4-56oz"
+        ],
+        "candidate_urls": [
+          "https://planetbeauty.com/products/davines-nounou-nourishing-oil",
+          "https://planetbeauty.com/products/davines-oi-all-in-one-milk-1",
+          "https://planetbeauty.com/products/davines-oi-conditioner",
+          "https://planetbeauty.com/products/davines-oi-duo",
+          "https://planetbeauty.com/products/davines-oi-liter-duo"
+        ],
+        "tool_success": true,
+        "error": null
+      }
+    ]
+  },
+  "repair_attempts": [],
+  "created_at": "20260515T211441Z"
+}

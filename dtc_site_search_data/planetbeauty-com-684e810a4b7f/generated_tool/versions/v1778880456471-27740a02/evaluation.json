@@ -1,0 +1,208 @@
+{
+  "version": "v1778880456471-27740a02",
+  "site_url": "https://planetbeauty.com",
+  "candidate_type": "tool",
+  "status": "approved",
+  "ab_mode": "historical_expected_url",
+  "pass": true,
+  "metrics": {
+    "smoke_success": true,
+    "candidate_count": 1,
+    "historical_cases": 5,
+    "historical_pass_rate": 1.0
+  },
+  "test_result": {
+    "success": true,
+    "output": {
+      "success": true,
+      "candidates": [
+        {
+          "url": "https://www.planetbeauty.com/products/{{ product.handle }}",
+          "title": "{{ \"quickView.qvViewFullDetails\" | translate: translations, 'View full details' }}",
+          "brand": "",
+          "handle": "{{ product.handle }}",
+          "score": 5,
+          "matched_terms": [],
+          "selected_variant": null,
+          "evidence": {
+            "source": "search_html",
+            "search_query": "self test",
+            "product_type": "",
+            "description_excerpt": "",
+            "tags": []
+          }
+        }
+      ],
+      "evidence": {
+        "site": "https://www.planetbeauty.com",
+        "queries_attempted": [
+          "self test"
+        ],
+        "product_url_pattern": "https://www.planetbeauty.com/products/{product-handle}",
+        "search_endpoints": [
+          "/search/suggest.json",
+          "/search?type=product&q="
+        ]
+      },
+      "trace": [
+        {
+          "step": "start",
+          "site": "https://www.planetbeauty.com",
+          "strategy": "shopify_search_suggest_then_search_html_then_product_json",
+          "query": "self test"
+        },
+        {
+          "step": "fetch",
+          "url": "https://www.planetbeauty.com/search/suggest.json?q=self%20test&resources%5Btype%5D=product&resources%5Blimit%5D=4",
+          "status": 200,
+          "ms": 360,
+          "bytes": 41
+        },
+        {
+          "step": "search_suggest_results",
+          "query": "self test",
+          "count": 0
+        },
+        {
+          "step": "fetch",
+          "url": "https://www.planetbeauty.com/search?type=product&q=self%20test",
+          "status": 200,
+          "ms": 470,
+          "bytes": 670056
+        },
+        {
+          "step": "search_html_results",
+          "query": "self test",
+          "count": 9
+        },
+        {
+          "step": "fetch",
+          "url": "https://www.planetbeauty.com/products/%7B%7B%20product.handle%20%7D%7D.js",
+          "status": 404,
+          "ms": 103,
+          "bytes": 0
+        },
+        {
+          "step": "product_json_failed",
+          "handle": "{{ product.handle }}",
+          "error": "HTTP 404 for https://www.planetbeauty.com/products/%7B%7B%20product.handle%20%7D%7D.js"
+        },
+        {
+          "step": "fetch",
+          "url": "https://www.planetbeauty.com/products/%7B%7B%20product.handle%20%7D%7D",
+          "status": 404,
+          "ms": 101,
+          "bytes": 9
+        },
+        {
+          "step": "product_html_failed",
+          "handle": "{{ product.handle }}",
+          "error": "HTTP 404 for https://www.planetbeauty.com/products/%7B%7B%20product.handle%20%7D%7D"
+        },
+        {
+          "step": "complete",
+          "candidate_count": 1,
+          "requests": 4
+        }
+      ]
+    }
+  },
+  "ab_result": {
+    "ab_mode": "historical_expected_url",
+    "cases": 5,
+    "passed": 5,
+    "pass_rate": 1.0,
+    "pass": true,
+    "results": [
+      {
+        "record_id": "20260515T205914Z-66934eba",
+        "pass": true,
+        "expected_urls": [
+          "https://planetbeauty.com/products/53-value-paul-mitchell-original-awapuhi-and-the-detangler-liter-duo",
+          "https://planetbeauty.com/products/65-value-paul-mitchell-shampoo-one-and-the-conditioner-duo"
+        ],
+        "candidate_urls": [
+          "https://planetbeauty.com/products/65-value-paul-mitchell-shampoo-one-and-the-conditioner-duo",
+          "https://planetbeauty.com/products/paul-mitchell-original-awapuhi-shampoo-33oz",
+          "https://planetbeauty.com/products/paul-mitchell-shampoo-one-33oz",
+          "https://planetbeauty.com/products/paul-mitchell-shampoo-one-10oz",
+          "https://planetbeauty.com/products/paul-mitchell-shampoo-one-16-oz"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T210543Z-598dd723",
+        "pass": true,
+        "expected_urls": [
+          "https://planetbeauty.com/products/cotzface-prime-and-protect-spf40-non-tinted"
+        ],
+        "candidate_urls": [
+          "https://planetbeauty.com/products/cotzface-prime-and-protect-spf40-non-tinted",
+          "https://planetbeauty.com/products/cotzface-prime-and-protect-spf40-tinted",
+          "https://planetbeauty.com/products/{{ product.handle }}",
+          "https://planetbeauty.com/products/{{productHandle}}",
+          "https://planetbeauty.com/products/{{productsHandle}}"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T211102Z-692138cb",
+        "pass": true,
+        "expected_urls": [
+          "https://planetbeauty.com/products/davines-oi-oil-absolute-beautifying-potion-1-69oz",
+          "https://planetbeauty.com/products/davines-oi-oil-absolute-beautifying-potion-4-56oz"
+        ],
+        "candidate_urls": [
+          "https://planetbeauty.com/products/davines-this-is-a-curl-gel-oil-250ml",
+          "https://planetbeauty.com/products/davines-oi-oil-absolute-beautifying-potion-4-56oz",
+          "https://planetbeauty.com/products/davines-oi-oil-absolute-beautifying-potion-1-69oz",
+          "https://planetbeauty.com/products/davine-oi-shampoo-9-4-oz",
+          "https://planetbeauty.com/products/davines-oi-shampoo"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T211639Z-42cae132",
+        "pass": true,
+        "expected_urls": [
+          "https://planetbeauty.com/products/st-tropez-self-tan-classic-mousse",
+          "https://planetbeauty.com/products/st-tropez-self-tan-dark-mousse",
+          "https://planetbeauty.com/products/st-tropez-self-tan-express-mousse",
+          "https://planetbeauty.com/products/st-tropez-self-tan-supreme-violet-bronzing-mousse"
+        ],
+        "candidate_urls": [
+          "https://planetbeauty.com/products/st-tropez-self-tan-dark-mousse",
+          "https://planetbeauty.com/products/st-tropez-self-tan-express-mousse",
+          "https://planetbeauty.com/products/st-tropez-self-tan-supreme-violet-bronzing-mousse",
+          "https://planetbeauty.com/products/st-tropez-self-tan-express-bronzing-mousse",
+          "https://planetbeauty.com/products/st-tropez-gradual-tan-daily-firming-lotion"
+        ],
+        "tool_success": true,
+        "error": null
+      },
+      {
+        "record_id": "20260515T212418Z-5408da52",
+        "pass": true,
+        "expected_urls": [
+          "https://planetbeauty.com/products/bumble-and-bumble-thickening-shampoo",
+          "https://planetbeauty.com/products/bumble-and-bumble-thickening-shampoo-and-conditioner-liter-duo",
+          "https://planetbeauty.com/products/bumble-and-bumble-thickening-volume-shampoo-conditioner-8oz-duo"
+        ],
+        "candidate_urls": [
+          "https://planetbeauty.com/products/bumble-and-bumble-thickening-shampoo",
+          "https://planetbeauty.com/products/bumble-and-bumble-thickening-conditioner",
+          "https://planetbeauty.com/products/bumble-and-bumble-thickening-high-drama-styling-foam",
+          "https://planetbeauty.com/products/bumble-and-bumble-bb-thickening-dryspun-texture-spray-jumbo-size",
+          "https://planetbeauty.com/products/bumble-and-bumble-color-stick"
+        ],
+        "tool_success": true,
+        "error": null
+      }
+    ]
+  },
+  "repair_attempts": [],
+  "created_at": "20260515T212808Z"
+}
